@@ -1,6 +1,16 @@
+import 'package:enlatadosmgapp/Service/AuthService.dart';
 import 'package:flutter/material.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +61,9 @@ class Login extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Column(
                       children: <Widget>[
-                        makeInput(label: "ID de usuario"),
+                        makeInput(
+                            label: "ID de usuario",
+                            keyboardType: TextInputType.number),
                         makeInput(label: "Contraseña", obscureText: true),
                       ],
                     ),
@@ -71,7 +83,10 @@ class Login extends StatelessWidget {
                       child: MaterialButton(
                         minWidth: double.infinity,
                         height: 60,
-                        onPressed: () {},
+                        onPressed: () {
+                          showLoaderDialog("Iniciando sesión...", context);
+                          _authService.login("7774", "admin123", context);
+                        },
                         color: Colors.red,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -89,11 +104,15 @@ class Login extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("¿No tienes cuenta?"),
+                      Text("¿No tienes cuenta? ",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 18)),
                       Text(
                         "Regístrate",
                         style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 18),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            color: Colors.red),
                       ),
                     ],
                   )
@@ -113,7 +132,26 @@ class Login extends StatelessWidget {
     );
   }
 
-  Widget makeInput({label, obscureText = false}) {
+  showLoaderDialog(String text, BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 7), child: Text(text)),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Widget makeInput(
+      {label, obscureText = false, keyboardType = TextInputType.name}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -127,13 +165,15 @@ class Login extends StatelessWidget {
         ),
         TextField(
           obscureText: obscureText,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            border:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-          ),
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black))),
         ),
         SizedBox(
           height: 30,

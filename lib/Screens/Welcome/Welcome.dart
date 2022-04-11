@@ -1,3 +1,4 @@
+import 'package:enlatadosmgapp/Screens/Auth/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -47,7 +48,10 @@ class WelcomeScreen extends StatelessWidget {
                 MaterialButton(
                   minWidth: double.infinity,
                   height: 60,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  },
                   shape: RoundedRectangleBorder(
                       side: BorderSide(color: Colors.red),
                       borderRadius: BorderRadius.circular(50)),

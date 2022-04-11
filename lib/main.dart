@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Enlatados MG',
-      home: Login(),
+      home: WelcomeScreen(),
       theme: ThemeData(
           textTheme: GoogleFonts.mulishTextTheme(Theme.of(context).textTheme)),
     );
