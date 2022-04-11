@@ -34,7 +34,7 @@ class Login extends StatelessWidget {
                   Column(
                     children: <Widget>[
                       Text(
-                        "Login",
+                        "Iniciar sesión",
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
@@ -42,7 +42,7 @@ class Login extends StatelessWidget {
                         height: 20,
                       ),
                       Text(
-                        "Login to your account",
+                        "Ingresa tus credenciales",
                         style: TextStyle(fontSize: 15, color: Colors.grey[700]),
                       ),
                     ],
@@ -51,8 +51,8 @@ class Login extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Column(
                       children: <Widget>[
-                        makeInput(label: "Email"),
-                        makeInput(label: "Password", obscureText: true),
+                        makeInput(label: "ID de usuario"),
+                        makeInput(label: "Contraseña", obscureText: true),
                       ],
                     ),
                   ),
@@ -72,14 +72,16 @@ class Login extends StatelessWidget {
                         minWidth: double.infinity,
                         height: 60,
                         onPressed: () {},
-                        color: Colors.greenAccent,
+                        color: Colors.red,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50)),
                         child: Text(
-                          "Login",
+                          "Acceder",
                           style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 18),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                              color: Colors.white),
                         ),
                       ),
                     ),
@@ -87,9 +89,9 @@ class Login extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("Don't have an account?"),
+                      Text("¿No tienes cuenta?"),
                       Text(
-                        "Sign up",
+                        "Regístrate",
                         style: TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 18),
                       ),
@@ -102,8 +104,8 @@ class Login extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 3,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage('assets/background.png'),
-                      fit: BoxFit.cover)),
+                      image: AssetImage('assets/man.png'),
+                      fit: BoxFit.fitHeight)),
             )
           ],
         ),
