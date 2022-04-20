@@ -21,9 +21,8 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 Text("¡Hola, bienvenido a EnlatadosMG!",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.mulish(
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 30))),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
                 SizedBox(
                   height: 20,
                 ),
@@ -58,24 +57,7 @@ class WelcomeScreen extends StatelessWidget {
                   child: Text("Iniciar sesión",
                       style:
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  child: MaterialButton(
-                    minWidth: double.infinity,
-                    height: 60,
-                    onPressed: () {},
-                    color: Colors.red,
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(50)),
-                    child: Text("Registrarse",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                            color: Colors.white)),
-                  ),
-                ),
+                )
               ],
             )
           ],

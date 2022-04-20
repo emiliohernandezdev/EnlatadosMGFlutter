@@ -7,9 +7,14 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +22,14 @@ class MyApp extends StatelessWidget {
       title: 'Enlatados MG',
       home: WelcomeScreen(),
       theme: ThemeData(
-          textTheme: GoogleFonts.mulishTextTheme(Theme.of(context).textTheme)),
+          textTheme:
+              GoogleFonts.publicSansTextTheme(Theme.of(context).textTheme),
+          brightness: Brightness.light),
+      darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          textTheme:
+              GoogleFonts.publicSansTextTheme(Theme.of(context).textTheme)),
+      themeMode: ThemeMode.light,
     );
   }
 }

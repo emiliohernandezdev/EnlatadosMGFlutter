@@ -1,5 +1,11 @@
+import 'package:enlatadosmgapp/Screens/Dealer/Dealers.dart';
+import 'package:enlatadosmgapp/Screens/Report/Reports.dart';
 import 'package:flutter/material.dart';
-import 'package:dot_navigation_bar/dot_navigation_bar.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+
+import '../Client/Clients.dart';
+import '../Order/Orders.dart';
+import '../Vehicle/Vehicles.dart';
 
 class UserHome extends StatefulWidget {
   const UserHome({Key? key}) : super(key: key);
@@ -14,65 +20,97 @@ class _UserHomeState extends State<UserHome> {
   void _handleIndexChanged(int i) {
     setState(() {
       _selectedTab = _SelectedTab.values[i];
+      pageController.jumpToPage(i);
+    });
+  }
+
+  int bottomSelectedIndex = 0;
+  PageController pageController = PageController(
+    initialPage: 0,
+    keepPage: true,
+  );
+
+  Widget buildPageView() {
+    return PageView(
+      controller: pageController,
+      onPageChanged: (index) {
+        pageChanged(index);
+      },
+      allowImplicitScrolling: false,
+      children: <Widget>[
+        const Reports(),
+        const Clients(),
+        const Dealers(),
+        const Vehicles(),
+        const Orders()
+      ],
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void pageChanged(int index) {
+    setState(() {
+      bottomSelectedIndex = index;
+    });
+  }
+
+  void bottomTapped(int index) {
+    setState(() {
+      bottomSelectedIndex = index;
+      pageController.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 2,
-        backgroundColor: Colors.black,
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 10),
-        child: DotNavigationBar(
-          margin: EdgeInsets.only(left: 10, right: 10),
-          currentIndex: _SelectedTab.values.indexOf(_selectedTab),
-          dotIndicatorColor: Colors.black,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey[300],
-          // enableFloatingNavBar: false,
-          onTap: _handleIndexChanged,
+        body: buildPageView(),
+        bottomNavigationBar: SalomonBottomBar(
+          duration: Duration(milliseconds: 1000),
+          currentIndex: bottomSelectedIndex,
+          onTap: (i) => setState(
+              () => {bottomSelectedIndex = i, pageController.jumpToPage(i)}),
           items: [
             /// Home
-            DotNavigationBarItem(
-              icon: Icon(Icons.home),
-              selectedColor: Colors.red,
+            SalomonBottomBarItem(
+              icon: Icon(Icons.date_range),
+              title: Text("Reportes"),
+              selectedColor: Colors.purple,
             ),
 
             /// Likes
-            DotNavigationBarItem(
-              icon: Icon(Icons.people_alt_sharp),
-              selectedColor: Colors.red,
-            ),
-
-            DotNavigationBarItem(
-              icon: Icon(Icons.local_shipping),
-              selectedColor: Colors.red,
+            SalomonBottomBarItem(
+              icon: Icon(Icons.people_rounded),
+              title: Text("Clientes"),
+              selectedColor: Colors.pink,
             ),
 
             /// Search
-            DotNavigationBarItem(
-              icon: Icon(Icons.directions_car),
-              selectedColor: Colors.red,
+            SalomonBottomBarItem(
+              icon: Icon(Icons.motorcycle_sharp),
+              title: Text("Repartidores"),
+              selectedColor: Colors.orange,
             ),
 
             /// Profile
-            DotNavigationBarItem(
-              icon: Icon(Icons.list_alt),
+            SalomonBottomBarItem(
+              icon: Icon(Icons.directions_car_sharp),
+              title: Text("Vehículos"),
+              selectedColor: Colors.teal,
+            ),
+
+            SalomonBottomBarItem(
+              icon: Icon(Icons.list_sharp),
+              title: Text("Órdenes"),
               selectedColor: Colors.red,
             ),
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
-        backgroundColor: Colors.red,
-        tooltip: 'Agregar',
-      ),
-    );
+        ));
   }
 }
 
