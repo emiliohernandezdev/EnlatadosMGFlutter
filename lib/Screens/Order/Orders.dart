@@ -3,6 +3,7 @@ import 'package:enlatadosmgapp/Models/Vehicle.dart';
 import 'package:enlatadosmgapp/Screens/Dealer/Create.dart';
 import 'package:enlatadosmgapp/Screens/Dealer/Report.dart';
 import 'package:enlatadosmgapp/Screens/Dealer/Update.dart';
+import 'package:enlatadosmgapp/Screens/Order/Detail.dart';
 import 'package:enlatadosmgapp/Screens/Order/Report.dart';
 import 'package:enlatadosmgapp/Service/DealerService.dart';
 import 'package:enlatadosmgapp/Service/OrderService.dart';
@@ -43,6 +44,50 @@ class _OrdersState extends State<Orders> {
   Widget build(BuildContext context) {
     List<Order> data = [];
     return Scaffold(
+      drawer: Drawer(
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.only(top: 35),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.red,
+                  radius: 45,
+                  child: Icon(
+                    FontAwesomeIcons.user,
+                    color: Colors.white,
+                    size: 45,
+                  ),
+                ),
+                SizedBox(
+                  height: 35,
+                ),
+                Text("Órdenes", style: GoogleFonts.dmSans(fontSize: 25.0)),
+                Divider(),
+                ListTile(
+                  subtitle: Text("Modificación del stock"),
+                  leading: Icon(FontAwesomeIcons.boxesStacked),
+                  title: Text("Gestor de stock",
+                      style: GoogleFonts.dmSans(fontSize: 18)),
+                  trailing: Icon(FontAwesomeIcons.arrowRight, size: 18),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/stock/')
+                        .then((value) => setState(() {
+                              _orderService
+                                  .getOrders(context)
+                                  .then((value) => {data = value});
+                            }));
+                  },
+                ),
+                Divider(),
+                Padding(
+                  padding: EdgeInsets.only(top: 75),
+                  child: Text("EnlatadosMG v1.0.1 - @emiliohernandezdev"),
+                )
+              ],
+            ),
+          )),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         child: Icon(Icons.add),
@@ -112,152 +157,17 @@ class _OrdersState extends State<Orders> {
                                       children: <Widget>[
                                         ListTile(
                                           onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext bc) =>
-                                                        AlertDialog(
-                                                          contentPadding:
-                                                              EdgeInsets.zero,
-                                                          title: Center(
-                                                            child: Text(
-                                                                "Orden " +
-                                                                    data[index]
-                                                                        .number,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        22.0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600)),
-                                                          ),
-                                                          content: Card(
-                                                            child: Column(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: <
-                                                                  Widget>[
-                                                                Divider(),
-                                                                ListTile(
-                                                                  leading:
-                                                                      CircleAvatar(
-                                                                    radius:
-                                                                        35.0,
-                                                                    backgroundColor: Color((math.Random().nextDouble() *
-                                                                                0xFFFFFF)
-                                                                            .toInt())
-                                                                        .withOpacity(
-                                                                            1.0),
-                                                                    child: Icon(
-                                                                        FontAwesomeIcons
-                                                                            .boxOpen),
-                                                                  ),
-                                                                  title: Wrap(
-                                                                    children: [
-                                                                      Text(
-                                                                          "Cliente: ",
-                                                                          style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 19.0)),
-                                                                      Text(
-                                                                          data[index].client.name +
-                                                                              " " +
-                                                                              data[index].client.surname,
-                                                                          style: TextStyle(fontSize: 19.0))
-                                                                    ],
-                                                                  ),
-                                                                  subtitle:
-                                                                      Wrap(
-                                                                    children: [
-                                                                      Text(
-                                                                          "Vehículo: ",
-                                                                          style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 19.0)),
-                                                                      Text(
-                                                                          data[index].vehicle.brand +
-                                                                              " " +
-                                                                              data[index].vehicle.model +
-                                                                              " " +
-                                                                              "(" +
-                                                                              data[index].vehicle.licensePlate +
-                                                                              ")",
-                                                                          style: TextStyle(fontSize: 19.0)),
-                                                                      Text(
-                                                                          "Repartidor: ",
-                                                                          style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 19.0)),
-                                                                      Text(
-                                                                          data[index].dealer.name +
-                                                                              " " +
-                                                                              data[index].dealer.surname,
-                                                                          style: TextStyle(fontSize: 19.0)),
-                                                                    ],
-                                                                  ),
-                                                                  isThreeLine:
-                                                                      true,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          actions: [
-                                                            data[index].status ==
-                                                                    "PENDING"
-                                                                ? MaterialButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                      _orderService
-                                                                          .updateStatus(data[index]
-                                                                              .number)
-                                                                          .then((value) =>
-                                                                              {
-                                                                                if (value["success"] == true)
-                                                                                  {
-                                                                                    print(value["result"]),
-                                                                                    _vehicleService.addVehicle(data[index].vehicle.licensePlate, data[index].vehicle.brand, data[index].vehicle.model, data[index].vehicle.color, data[index].vehicle.year.toString()),
-                                                                                    _dealerService.addDealer(data[index].dealer.cui, data[index].dealer.name, data[index].dealer.surname, data[index].dealer.phone, data[index].dealer.license),
-                                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                                      content: Text(value["message"]),
-                                                                                    )),
-                                                                                    setState(() {
-                                                                                      _orderService.getOrders(context).then((value) => {
-                                                                                            data = value
-                                                                                          });
-                                                                                    })
-                                                                                  }
-                                                                                else
-                                                                                  {
-                                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                                      content: Text(value["message"]),
-                                                                                    ))
-                                                                                  }
-                                                                              });
-                                                                    },
-                                                                    child: Text(
-                                                                        "Dar por finalizada",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                17.0)),
-                                                                  )
-                                                                : Text(
-                                                                    "Orden ya finalizada."),
-                                                            MaterialButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                              child: Text(
-                                                                  "Cerrar",
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          17.0)),
-                                                            )
-                                                          ],
-                                                        ));
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      OrderDetail( number: data[index].number)),
+                                            ).then((value) => setState(() {
+                                                  _orderService
+                                                      .getOrders(context)
+                                                      .then((value) =>
+                                                          {data = value});
+                                                }));
                                           },
                                           leading: CircleAvatar(
                                             backgroundColor: Colors.red,

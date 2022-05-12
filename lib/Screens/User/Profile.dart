@@ -15,17 +15,37 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int id = 0;
   @override
   void initState() {
+    _authService.getUserProfile(context)
+    .then((value) => {
+      _nameController.text = value["name"],
+      _surnameController.text = value["surname"],
+      _passwordController.text = value["password"]
+    });
     super.initState();
   }
 
   AuthService _authService = AuthService();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _surnameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            _authService.updateUser(context, id, _nameController.text, _surnameController.text, _passwordController.text)
+            .then((value) => {
+              print(value),
+              if(value["success"] == true){
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Datos de usuario actualizados.")))
+              }else{
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error al actualizar los datos")))
+              }
+            });
+          },
           child: Icon(FontAwesomeIcons.save),
           tooltip: 'Guardar datos',
         ),
@@ -49,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.data != null && snapshot.data.length > 0) {
-                    print(snapshot.data);
+                    id = snapshot.data["id"];
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -82,21 +102,22 @@ class _ProfilePageState extends State<ProfilePage> {
                                         style:
                                             GoogleFonts.dmSans(fontSize: 16)),
                                     TextFormField(
-                                      initialValue: snapshot.data["name"],
+                                      controller: _nameController,
                                     ),
                                     Divider(),
                                     Text("Apellido:",
                                         style:
                                             GoogleFonts.dmSans(fontSize: 16)),
                                     TextFormField(
-                                      initialValue: snapshot.data["surname"],
+                                      controller: _surnameController,
                                     ),
                                     Divider(),
                                     Text("Contraseña:",
                                         style:
                                             GoogleFonts.dmSans(fontSize: 16)),
                                     TextFormField(
-                                      initialValue: snapshot.data["password"],
+                                      obscureText: true,
+                                      controller: _passwordController,
                                     ),
                                   ],
                                 ),

@@ -53,6 +53,39 @@ class AuthService {
     }
   }
 
+  Future updateUser(BuildContext context, int id, String name, String surname, String password) async{
+    var endpoint = '${url}user/update/${id}';
+    Map data = {'id': id, 'name': name, 'surname': surname, 'password': password};
+    var body = json.encode(data); 
+    Map<String, String> headers = {};
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String token = "";
+    await storage.read(key: "jwt").then((value) => {
+          token = (value != null) ? value : "",
+          headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            HttpHeaders.authorizationHeader: token
+          }
+    });
+    final response = await http.patch(Uri.parse(endpoint), body: body, headers: headers);
+    Map<String, dynamic> resp = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      if (resp["success"] == true && resp["result"] != null) {
+        return resp;
+      }
+    } else {
+      print(resp);
+      const snackBar = SnackBar(
+          content: Text("Ocurrió un error al actualizar los datos."),
+          elevation: 15,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return {};
+    }
+  }
+
   Future getUserProfile(BuildContext context) async {
     var endpoint = '${url}/user/profile';
     final FlutterSecureStorage storage = FlutterSecureStorage();

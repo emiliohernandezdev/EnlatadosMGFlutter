@@ -5,6 +5,7 @@ import 'package:enlatadosmgapp/Models/Client.dart';
 import 'package:enlatadosmgapp/Service/ClientService.dart';
 import 'package:enlatadosmgapp/Service/DealerService.dart';
 import 'package:enlatadosmgapp/Service/OrderService.dart';
+import 'package:enlatadosmgapp/Service/StockService.dart';
 import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,12 +33,19 @@ class _CreateOrderState extends State<CreateOrder> {
   ClientService clientService = ClientService();
   VehicleService vehicleService = VehicleService();
   OrderService orderService = OrderService();
+  StockService stockService = StockService();
   List<Map<String, dynamic>> clients = [];
   List<Map<String, dynamic>> dealers = [];
   List<Map<String, dynamic>> vehicles = [];
 
+  int boxes = 0;
   @override
   void initState() {
+    stockService.getStock(context)
+    .then((value) => {
+      print(value.length),
+      boxes = value.length
+    });
     clientService.getClients(context, "inOrder").then((value) => {
           value.forEach((element) {
             clients.add({

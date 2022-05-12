@@ -57,7 +57,7 @@ class VehicleService {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      throw Exception("Error bro");
+      throw Exception(response.body);
     }
   }
 

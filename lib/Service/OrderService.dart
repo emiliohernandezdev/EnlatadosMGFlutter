@@ -76,6 +76,24 @@ class OrderService {
     }
   }
 
+  Future<Order> getOrder(String code) async {
+    var id = code.split("#-")[1].toString();
+    var endpoint = '${url}order/get/${id}';
+    final Response response = await http.get(
+      Uri.parse(endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return Order.fromJson(data);
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
 
   Future updateStatus(String number) async {
     var id = number.split("#-")[1].toString();
