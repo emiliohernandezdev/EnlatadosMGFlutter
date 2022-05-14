@@ -1,48 +1,51 @@
-import 'dart:convert' as convert;
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-import '../Models/Dealer.dart';
 
-class DealerService {
+import 'package:enlatadosmgapp/Models/Vehicle.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+
+import '../Models/Client.dart';
+
+class VehicleService {
   String url = "http://192.168.1.8:8080/";
 
-  Future<List<Dealer>> getDealers(BuildContext context) async {
-    var endpoint = '${url}/dealer/all';
+  Future<List<Vehicle>> getVehicles(BuildContext context) async {
+    var endpoint = '${url}vehicle/all';
+    print(endpoint);
     final response = await http.get(Uri.parse(endpoint), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      List<Dealer> registers = [];
+      List<Vehicle> registers = [];
       for (data in data) {
-        registers.add(Dealer.fromJson(data));
+        registers.add(Vehicle.fromJson(data));
       }
       return registers;
     } else {
       print(response.statusCode);
       print(response.body);
       const snackBar = SnackBar(
-          content: Text("Ocurrió un error al obtener los registros."),
+          content: Text("Ocurrió un error al obtener los vehiculos."),
           elevation: 15,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return <Dealer>[];
+      return <Vehicle>[];
     }
   }
 
-  Future addDealer(String cui, String name, String surname, String phone,
-      String license) async {
-    var uri = url + "dealer/add";
+  Future addVehicle(String licensePlate, String brand, String model,
+      String color, String year) async {
+    var uri = url + "vehicle/add";
     Map body = {
-      'cui': int.parse(cui),
-      'name': name,
-      'surname': surname,
-      'phone': phone,
-      'license': license
+      'licensePlate': licensePlate,
+      'brand': brand,
+      'model': model,
+      'color': color,
+      'year': int.parse(year)
     };
 
     final Response response = await http.post(Uri.parse(uri),

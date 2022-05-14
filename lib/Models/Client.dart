@@ -7,7 +7,6 @@ class ClientM {
       required this.surname,
       required this.phone,
       required this.address});
-
   String cui;
   String name;
   String surname;

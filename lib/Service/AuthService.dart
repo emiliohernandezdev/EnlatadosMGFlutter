@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 import '../Models/User.dart';
 
 class AuthService {
-  String url = "http://192.168.0.8:8080/";
+  String url = "http://192.168.1.8:8080/";
 
   Future<List<User>> getUsers(BuildContext context) async {
     var endpoint = '${url}/user/all';

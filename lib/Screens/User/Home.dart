@@ -1,6 +1,7 @@
 import 'package:enlatadosmgapp/Screens/Dealer/Dealers.dart';
 import 'package:enlatadosmgapp/Screens/Report/Reports.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import '../Client/Clients.dart';
@@ -37,6 +38,7 @@ class _UserHomeState extends State<UserHome> {
         pageChanged(index);
       },
       allowImplicitScrolling: false,
+      physics: NeverScrollableScrollPhysics(),
       children: <Widget>[
         const Reports(),
         const Clients(),
@@ -62,7 +64,7 @@ class _UserHomeState extends State<UserHome> {
     setState(() {
       bottomSelectedIndex = index;
       pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
+          duration: Duration(milliseconds: 500), curve: Curves.easeOutQuad);
     });
   }
 
@@ -70,45 +72,31 @@ class _UserHomeState extends State<UserHome> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: buildPageView(),
-        bottomNavigationBar: SalomonBottomBar(
-          duration: Duration(milliseconds: 1000),
+        bottomNavigationBar: BottomNavigationBar(
+          enableFeedback: true,
+          iconSize: 22.0,
+          elevation: 2.0,
           currentIndex: bottomSelectedIndex,
-          onTap: (i) => setState(
-              () => {bottomSelectedIndex = i, pageController.jumpToPage(i)}),
+          onTap: (int index) {
+            setState(() {
+              bottomSelectedIndex = index;
+            });
+            bottomTapped(index);
+          },
+          selectedItemColor: Colors.red,
+          unselectedItemColor: Colors.black,
           items: [
-            /// Home
-            SalomonBottomBarItem(
-              icon: Icon(Icons.date_range),
-              title: Text("Reportes"),
-              selectedColor: Colors.purple,
-            ),
-
-            /// Likes
-            SalomonBottomBarItem(
-              icon: Icon(Icons.people_rounded),
-              title: Text("Clientes"),
-              selectedColor: Colors.pink,
-            ),
-
-            /// Search
-            SalomonBottomBarItem(
-              icon: Icon(Icons.motorcycle_sharp),
-              title: Text("Repartidores"),
-              selectedColor: Colors.orange,
-            ),
-
-            /// Profile
-            SalomonBottomBarItem(
-              icon: Icon(Icons.directions_car_sharp),
-              title: Text("Vehículos"),
-              selectedColor: Colors.teal,
-            ),
-
-            SalomonBottomBarItem(
-              icon: Icon(Icons.list_sharp),
-              title: Text("Órdenes"),
-              selectedColor: Colors.red,
-            ),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.diagramProject), label: "Reportes"),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.businessTime), label: "Clientes"),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.peopleCarryBox),
+                label: "Repartidores"),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.car), label: "Vehículos"),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.box), label: "Órdenes")
           ],
         ));
   }

@@ -1,7 +1,10 @@
 import 'package:enlatadosmgapp/Screens/Client/Create.dart';
+import 'package:enlatadosmgapp/Screens/Client/Detail.dart';
+import 'package:enlatadosmgapp/Screens/Client/Update.dart';
 import 'package:enlatadosmgapp/Service/ClientService.dart';
 import 'package:flutter/material.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:math' as math;
 import '../../Models/Client.dart';
 
 class Clients extends StatefulWidget {
@@ -14,203 +17,360 @@ class Clients extends StatefulWidget {
 class _ClientsState extends State<Clients> {
   ClientService clientService = ClientService();
   String dropdownValue = "inOrder";
+
+  String toShortName(String nm, String sr) {
+    var name = nm.split("");
+    var surname = sr.split("");
+
+    var result = name[0] + surname[0];
+
+    return result.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
+    double c_width = MediaQuery.of(context).size.width * 0.8;
+
+    ClientM? selectedClient = null;
+
+    List<ClientM> data = [];
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text("Clientes"),
-      ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreateClient()),
-          );
+          Navigator.pushNamed(context, '/client/create')
+              .then((value) => setState(() {
+                    clientService
+                        .getClients(context, "inOrder")
+                        .then((value) => {data = value});
+                  }));
         },
         tooltip: 'Agregar cliente',
       ),
-      body: FutureBuilder<List<ClientM>>(
-          future: clientService.getClients(context, "inOrder"),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: Card(
-                  child: Text("No existen"),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Card(
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerbox) => [
+          SliverAppBar(
+            backgroundColor: Colors.red,
+            expandedHeight: 260,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.asset("assets/latas.jpg", fit: BoxFit.cover),
+            ),
+            floating: true,
+            elevation: 12.0,
+            pinned: true,
+            centerTitle: true,
+            title: Text("Clientes"),
+          )
+        ],
+        body: FutureBuilder<List<ClientM>>(
+            future: clientService.getClients(context, "inOrder"),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Card(
+                    color: Colors.red,
+                    child: Text("Error al cargar la data :("),
+                  ),
+                );
+              } else {
+                return RefreshIndicator(
+                  edgeOffset: 50,
+                  triggerMode: RefreshIndicatorTriggerMode.anywhere,
                   color: Colors.red,
-                  child: Text("Error al cargar la data :("),
-                ),
-              );
-            } else {
-              return RefreshIndicator(
-                edgeOffset: 50,
-                triggerMode: RefreshIndicatorTriggerMode.anywhere,
-                child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                    shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      List<ClientM> data = snapshot.data;
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Card(
-                            color: Colors.white,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  onLongPress: () {
-                                    showModalBottomSheet(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0),
-                                        ),
-                                        context: context,
-                                        builder: (context) {
-                                          return Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              SizedBox(height: 30),
-                                              Text(
-                                                  "Acciones disponibles para: \n" +
-                                                      data[index].name +
-                                                      " " +
-                                                      data[index].surname,
-                                                  textAlign: TextAlign.center,
+                  child: ListView.builder(
+                      padding: EdgeInsets.all(12),
+                      itemCount: snapshot.data.length,
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        data = snapshot.data;
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Dismissible(
+                            key: UniqueKey(),
+                            background: Container(
+                                color: Colors.blue,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                alignment: Alignment.centerRight,
+                                child: Row(
+                                  children: [
+                                    const Icon(FontAwesomeIcons.pencil,
+                                        color: Colors.white),
+                                    SizedBox(width: 8.0),
+                                    Text("Editar",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 19.0))
+                                  ],
+                                )),
+                            secondaryBackground: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    const Icon(FontAwesomeIcons.trash,
+                                        color: Colors.white),
+                                    SizedBox(width: 8.0),
+                                    Text("Eliminar",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 19.0))
+                                  ],
+                                )),
+                            confirmDismiss: (direction) async {
+                              if (direction == DismissDirection.endToStart) {
+                                await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        content: Text(
+                                            "¿Seguro que deseas eliminar el cliente?"),
+                                        actions: [
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("Cancelar")),
+                                          FlatButton(
+                                              onPressed: () {
+                                                clientService
+                                                    .deleteClient(int.parse(
+                                                        data[index].cui))
+                                                    .then((value) => {
+                                                          if (value[
+                                                                  "success"] ==
+                                                              true)
+                                                            {
+                                                              data.removeAt(
+                                                                  index),
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                content: Text(value[
+                                                                    "message"]),
+                                                              )),
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                              setState(() {
+                                                                clientService
+                                                                    .getClients(
+                                                                        context,
+                                                                        "inOrder")
+                                                                    .then(
+                                                                        (value) =>
+                                                                            {
+                                                                              data = value
+                                                                            });
+                                                              })
+                                                            }
+                                                          else
+                                                            {
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                          content:
+                                                                              Text(value["message"])))
+                                                            }
+                                                        })
+                                                    .catchError(
+                                                        (err) => {print(err)});
+                                              },
+                                              child: Text("Eliminar",
                                                   style: TextStyle(
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
-                                              SizedBox(height: 20),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor:
-                                                        Colors.blue,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.edit,
-                                                  color: Colors.white,
-                                                ),
-                                                label: Text(
-                                                  'Editar',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor: Colors.red,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.delete,
-                                                  color: Colors.white,
-                                                ),
-                                                label: Text(
-                                                  'Eliminar',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.visibility,
-                                                  color: Colors.white,
-                                                ),
-                                                label: Text(
-                                                  'Ver',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              //Divider(),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.close,
-                                                  color: Colors.red,
-                                                ),
-                                                label: Text(
-                                                  'Cancelar',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                ),
-                                              ),
-                                            ],
-                                          );
+                                                      color: Colors.red)))
+                                        ],
+                                      );
+                                    });
+                              } else {
+                                Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => UpdateClient(
+                                                id: int.parse(
+                                                    data[index].cui))))
+                                    .then((value) => {
+                                          setState(() {
+                                            clientService
+                                                .getClients(context, "inOrder")
+                                                .then((res) => {data = res});
+                                          })
                                         });
-                                  },
-                                  leading: Icon(Icons.hail, color: Colors.blue),
-                                  title: Text(
-                                      data[index].name +
-                                          " " +
-                                          data[index].surname,
-                                      style: TextStyle(fontSize: 18)),
-                                  subtitle: Text(
-                                    'Dirección: ' +
-                                        data[index].address +
-                                        "\nTeléfono: " +
-                                        data[index].phone,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            )),
-                      );
-                    }),
-                onRefresh: () async {},
-              );
-            }
-            return CircularProgressIndicator();
-          }),
+                              }
+                            },
+                            child: Card(
+                                color: Colors.white,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext bc) =>
+                                                AlertDialog(
+                                                  contentPadding:
+                                                      EdgeInsets.zero,
+                                                  title: Center(
+                                                    child: Text(
+                                                        "Detalle de cliente:",
+                                                        style: TextStyle(
+                                                            fontSize: 22.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600)),
+                                                  ),
+                                                  content: Card(
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: <Widget>[
+                                                        Divider(),
+                                                        ListTile(
+                                                          leading: CircleAvatar(
+                                                            radius: 35.0,
+                                                            backgroundColor: Color(
+                                                                    (math.Random().nextDouble() *
+                                                                            0xFFFFFF)
+                                                                        .toInt())
+                                                                .withOpacity(
+                                                                    1.0),
+                                                            child: Text(
+                                                                toShortName(
+                                                                    data[index]
+                                                                        .name,
+                                                                    data[index]
+                                                                        .surname),
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white)),
+                                                          ),
+                                                          title: Wrap(
+                                                            children: [
+                                                              Text("Nombre: ",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          19.0)),
+                                                              Text(
+                                                                  data[index]
+                                                                          .name +
+                                                                      " " +
+                                                                      data[index]
+                                                                          .surname,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          19.0))
+                                                            ],
+                                                          ),
+                                                          subtitle: Wrap(
+                                                            children: [
+                                                              Text(
+                                                                  "Dirección: ",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          19.0)),
+                                                              Text(
+                                                                  data[index]
+                                                                      .address,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          19.0)),
+                                                              Text("Teléfono: ",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          19.0)),
+                                                              Text(
+                                                                  data[index]
+                                                                      .phone,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          19.0)),
+                                                            ],
+                                                          ),
+                                                          isThreeLine: true,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  actions: [
+                                                    MaterialButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text("Cerrar",
+                                                          style: TextStyle(
+                                                              fontSize: 17.0)),
+                                                    )
+                                                  ],
+                                                ));
+                                      },
+                                      leading: CircleAvatar(
+                                        backgroundColor: Color(
+                                                (math.Random().nextDouble() *
+                                                        0xFFFFFF)
+                                                    .toInt())
+                                            .withOpacity(1.0),
+                                        child: Text(
+                                            toShortName(data[index].name,
+                                                data[index].surname),
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                      title: Text(
+                                          data[index].name +
+                                              " " +
+                                              data[index].surname,
+                                          style: TextStyle(fontSize: 18)),
+                                      subtitle: Text(
+                                        "Teléfono: " + data[index].phone,
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        );
+                      }),
+                  onRefresh: () async {
+                    const snackBar = SnackBar(
+                      content: Text('Registros actualizados'),
+                    );
+
+                    clientService
+                        .getClients(context, "inOrder")
+                        .then((value) => setState(() {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              data = value;
+                            }))
+                        .catchError((err) => {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(content: Text(err))),
+                            });
+                  },
+                );
+              }
+            }),
+      ),
     );
   }
 }

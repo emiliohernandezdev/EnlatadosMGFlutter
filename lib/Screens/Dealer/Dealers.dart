@@ -14,24 +14,20 @@ class _DealersState extends State<Dealers> {
   DealerService _dealerService = DealerService();
   List<Dealer> dealers = <Dealer>[];
 
+  String toShortName(String nm, String sr) {
+    var name = nm.split("");
+    var surname = sr.split("");
+
+    var result = name[0] + surname[0];
+
+    return result.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Repartidores"),
-          backgroundColor: Colors.black,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () {
-                setState(() {
-                  _dealerService.getDealers(context);
-                });
-              },
-              tooltip: 'Actualizar',
-            ),
-          ],
-        ),
+        appBar:
+            AppBar(title: Text("Repartidores"), backgroundColor: Colors.black),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -200,8 +196,11 @@ class _DealersState extends State<Dealers> {
                                             );
                                           });
                                     },
-                                    leading:
-                                        Icon(Icons.person, color: Colors.blue),
+                                    leading: CircleAvatar(
+                                      backgroundColor: Colors.red,
+                                      child: Text(toShortName(data[index].name,
+                                          data[index].surname)),
+                                    ),
                                     title: Text(
                                         data[index].name +
                                             " " +
@@ -210,21 +209,10 @@ class _DealersState extends State<Dealers> {
                                     subtitle: Text(
                                       'Licencia tipo: ' +
                                           data[index].license +
-                                          ". Teléfono: " +
+                                          "\nTeléfono: " +
                                           data[index].phone,
                                       style: TextStyle(fontSize: 16),
                                     ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      TextButton(
-                                        child: Text('Ocupado',
-                                            style: TextStyle(fontSize: 16)),
-                                        onPressed: () {/* ... */},
-                                      ),
-                                      SizedBox(width: 8),
-                                    ],
                                   ),
                                 ],
                               )),

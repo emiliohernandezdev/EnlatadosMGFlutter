@@ -36,11 +36,6 @@ class _LoginState extends State<Login> {
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 60.0,
-                      child: Image.asset("assets/lata.png", width: 50),
-                      backgroundColor: Colors.red.withOpacity(0.9),
-                    ),
                     Text(
                       'EnlatadosMG',
                       style: TextStyle(
@@ -55,12 +50,11 @@ class _LoginState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextInputField(
-                    icon: FontAwesomeIcons.fingerprint,
-                    hint: 'ID de usuario',
-                    inputType: TextInputType.number,
-                    controller: idController,
-                    inputAction: TextInputAction.next,
-                  ),
+                      icon: FontAwesomeIcons.fingerprint,
+                      hint: 'ID de usuario',
+                      inputType: TextInputType.number,
+                      controller: idController,
+                      inputAction: TextInputAction.next),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Container(
@@ -209,8 +203,7 @@ class TextInputField extends StatelessWidget {
       required this.hint,
       this.inputType,
       this.inputAction,
-      this.controller,
-      this.minLines})
+      this.controller})
       : super(key: key);
 
   final IconData icon;
@@ -218,7 +211,6 @@ class TextInputField extends StatelessWidget {
   final TextInputType? inputType;
   final TextInputAction? inputAction;
   final TextEditingController? controller;
-  final int? minLines;
 
   @override
   Widget build(BuildContext context) {
@@ -235,8 +227,6 @@ class TextInputField extends StatelessWidget {
         ),
         child: Center(
           child: TextField(
-            minLines: minLines,
-            maxLines: 10,
             controller: controller,
             decoration: InputDecoration(
               border: InputBorder.none,

@@ -19,38 +19,77 @@ class _ReportsState extends State<Reports> {
     return _authService.getUsers(context);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: Text("Reportes"),
-        ),
-        body: Column(
-          children: [
-            Card(
-              child: Container(
-                height: 300,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            "https://ericknavarro.io/2019/04/26/08-Graficar-arboles-AVL-con-Graphviz-y-Java/03.jpeg"))),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text('Lista enlazada de usuarios',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w500)),
+      backgroundColor: Colors.black,
+      body: NestedScrollView(
+          floatHeaderSlivers: true,
+          headerSliverBuilder: (context, innerbox) => [
+                SliverAppBar(
+                  backgroundColor: Colors.red,
+                  expandedHeight: 180,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background:
+                        Image.asset("assets/latas.jpg", fit: BoxFit.cover),
+                  ),
+                  floating: true,
+                  elevation: 12.0,
+                  pinned: true,
+                  centerTitle: true,
+                  title: Text("Reportería", style: TextStyle(fontSize: 25.0)),
+                  titleSpacing: NavigationToolbar.kMiddleSpacing,
+                )
+              ],
+          body: GridView.count(
+            physics: ScrollPhysics(),
+            shrinkWrap: true,
+            primary: false,
+            padding: const EdgeInsets.all(20),
+            mainAxisSpacing: 10,
+            crossAxisCount: 2,
+            children: <Widget>[
+              Card(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      image: DecorationImage(
+                          fit: BoxFit.fitHeight,
+                          image: AssetImage('assets/client.png'))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text('Árbol AVL de \nClientes'),
+                  ),
                 ),
               ),
-              margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0),
-            ),
-          ],
-        ));
+              Card(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage('assets/users.png'))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text('Lista enlazada\nde Usuarios'),
+                  ),
+                ),
+              ),
+              Card(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage('assets/products.png'))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text('Pila\nde cajas de productos'),
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
   }
 }

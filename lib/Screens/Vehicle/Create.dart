@@ -1,25 +1,66 @@
 import 'dart:ui';
 
 import 'package:enlatadosmgapp/Service/ClientService.dart';
+import 'package:enlatadosmgapp/Service/DealerService.dart';
+import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 
-class CreateClient extends StatefulWidget {
-  const CreateClient({Key? key}) : super(key: key);
+class CreateVehicle extends StatefulWidget {
+  const CreateVehicle({Key? key}) : super(key: key);
 
   @override
-  State<CreateClient> createState() => _CreateClientState();
+  State<CreateVehicle> createState() => _CreateVehicleState();
 }
 
-class _CreateClientState extends State<CreateClient> {
-  TextEditingController cuiController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController surnameController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  ClientService clientService = ClientService();
-  var _key = new GlobalKey<ScaffoldState>();
+class _CreateVehicleState extends State<CreateVehicle> {
+  TextEditingController licensePlateController = TextEditingController();
+  TextEditingController brandController = TextEditingController();
+  TextEditingController modelController = TextEditingController();
+  TextEditingController colorController = TextEditingController();
+  TextEditingController yearController = TextEditingController();
+  VehicleService vehicleService = VehicleService();
+
+  Color selectedColor = Colors.transparent;
+
+  void _openDialog(String title, Widget content) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(6.0),
+          title: Text(title),
+          content: content,
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: Navigator.of(context).pop,
+            ),
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openMainColorPicker() async {
+    _openDialog(
+      "Seleccionar color de carro:",
+      MaterialColorPicker(
+        selectedColor: selectedColor,
+        allowShades: true,
+        onColorChange: (Color color) =>
+            setState(() => {selectedColor = color, print(color)}),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -28,7 +69,7 @@ class _CreateClientState extends State<CreateClient> {
         BackgroundImage(image: 'assets/latas.jpg'),
         Scaffold(
           appBar: AppBar(
-            title: Text("Agregar cliente"),
+            title: Text("Agregar vehículo"),
             backgroundColor: Colors.transparent,
           ),
           backgroundColor: Colors.transparent,
@@ -50,8 +91,8 @@ class _CreateClientState extends State<CreateClient> {
                               0.4,
                             ),
                             child: Icon(
-                              FontAwesomeIcons.userTie,
-                              color: Colors.white,
+                              FontAwesomeIcons.car,
+                              color: selectedColor,
                               size: size.width * 0.1,
                             ),
                           ),
@@ -83,25 +124,25 @@ class _CreateClientState extends State<CreateClient> {
                 Column(
                   children: [
                     TextInputField(
-                      icon: FontAwesomeIcons.idCard,
-                      hint: 'CUI',
-                      inputType: TextInputType.number,
-                      inputAction: TextInputAction.next,
-                      controller: cuiController,
-                    ),
-                    TextInputField(
-                      icon: FontAwesomeIcons.user,
-                      hint: 'Nombre',
+                      icon: FontAwesomeIcons.carRear,
+                      hint: 'Placa',
                       inputType: TextInputType.text,
                       inputAction: TextInputAction.next,
-                      controller: nameController,
+                      controller: licensePlateController,
                     ),
                     TextInputField(
-                      icon: FontAwesomeIcons.user,
-                      hint: 'Apellido',
+                      icon: FontAwesomeIcons.carRear,
+                      hint: 'Marca',
                       inputType: TextInputType.text,
                       inputAction: TextInputAction.next,
-                      controller: surnameController,
+                      controller: brandController,
+                    ),
+                    TextInputField(
+                      icon: FontAwesomeIcons.carRear,
+                      hint: 'Modelo',
+                      inputType: TextInputType.text,
+                      inputAction: TextInputAction.next,
+                      controller: modelController,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -113,38 +154,24 @@ class _CreateClientState extends State<CreateClient> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
-                          child: IntlPhoneField(
-                            controller: phoneController,
-                            dropdownTextStyle:
-                                TextStyle(color: Colors.white, fontSize: 22),
-                            searchText: "Buscar país",
-                            style: TextStyle(color: Colors.white, fontSize: 22),
-                            initialCountryCode: 'GT',
-                            invalidNumberMessage: "Número de teléfono inválido",
-                            disableLengthCheck: true,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "1234-5678",
-                              hintStyle: TextStyle(
+                            child: TextButton.icon(
+                          icon: Icon(FontAwesomeIcons.palette,
+                              color: Colors.white),
+                          onPressed: _openMainColorPicker,
+                          label: Text("Seleccionar color del vehículo",
+                              style: TextStyle(
+                                  fontSize: 20,
                                   color: Colors.white,
-                                  height: 1.5,
-                                  fontSize: 22),
-                            ),
-                            textInputAction: TextInputAction.next,
-                            dropdownIconPosition: IconPosition.leading,
-                            keyboardType: TextInputType.phone,
-                          ),
-                        ),
+                                  height: 1.5)),
+                        )),
                       ),
                     ),
-                    TextAreaField(
-                      icon: FontAwesomeIcons.mapLocationDot,
-                      hint: 'Dirección',
-                      inputAction: TextInputAction.newline,
-                      inputType: TextInputType.multiline,
-                      minLines: 1,
-                      maxLines: 5,
-                      controller: addressController,
+                    TextInputField(
+                      icon: FontAwesomeIcons.carRear,
+                      hint: 'Año',
+                      inputType: TextInputType.number,
+                      inputAction: TextInputAction.done,
+                      controller: yearController,
                     ),
                     SizedBox(
                       height: 25,
@@ -158,24 +185,24 @@ class _CreateClientState extends State<CreateClient> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          if (cuiController.text.isNotEmpty &&
-                              nameController.text.isNotEmpty &&
-                              surnameController.text.isNotEmpty &&
-                              phoneController.text.isNotEmpty &&
-                              addressController.text.isNotEmpty) {
-                            clientService
-                                .addClient(
-                                    cuiController.text,
-                                    nameController.text,
-                                    surnameController.text,
-                                    phoneController.text,
-                                    addressController.text)
-                                .then((value) => {
-                                      if (value["success"] == true)
+                          if (licensePlateController.text.isNotEmpty &&
+                              brandController.text.isNotEmpty &&
+                              modelController.text.isNotEmpty &&
+                              yearController.text.isNotEmpty &&
+                              selectedColor != null) {
+                            vehicleService
+                                .addVehicle(
+                                    licensePlateController.text,
+                                    brandController.text,
+                                    modelController.text,
+                                    selectedColor.value.toString(),
+                                    yearController.text)
+                                .then((v) => {
+                                      if (v["success"] == true)
                                         {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                            content: Text(value["message"]),
+                                            content: Text(v["message"]),
                                           )),
                                           Navigator.of(context).pop(),
                                         }
@@ -183,21 +210,16 @@ class _CreateClientState extends State<CreateClient> {
                                         {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                                  content:
-                                                      Text(value["message"])))
+                                                  content: Text(v["message"])))
                                         }
+                                    })
+                                .catchError((err) => {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(err.toString())))
                                     });
-                          } else {
-                            const snackBar = SnackBar(
-                                content: Text(
-                                    'Completa toda la información del cliente.'),
-                                elevation: 15,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                          }
+                            print(selectedColor.value);
+                          } else {}
                         },
                         child: Text(
                           "Guardar",
@@ -260,71 +282,6 @@ Widget makeInput(
       ),
     ],
   );
-}
-
-class TextAreaField extends StatelessWidget {
-  const TextAreaField(
-      {Key? key,
-      required this.icon,
-      required this.hint,
-      this.inputType,
-      this.inputAction,
-      this.controller,
-      this.minLines,
-      this.maxLines})
-      : super(key: key);
-
-  final IconData icon;
-  final String hint;
-  final TextInputType? inputType;
-  final TextInputAction? inputAction;
-  final TextEditingController? controller;
-  final int? minLines;
-  final int? maxLines;
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        width: size.width * 0.8,
-        decoration: BoxDecoration(
-          color: Colors.grey[500]!.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-            child: Container(
-          child: new ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 300.0),
-            child: TextField(
-              minLines: minLines,
-              maxLines: maxLines,
-              controller: controller,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Icon(
-                    icon,
-                    size: 28,
-                    color: Colors.white,
-                  ),
-                ),
-                hintText: hint,
-                hintStyle:
-                    TextStyle(fontSize: 22, color: Colors.white, height: 1.5),
-              ),
-              style: TextStyle(fontSize: 22, color: Colors.white, height: 1.5),
-              keyboardType: inputType,
-              textInputAction: inputAction,
-            ),
-          ),
-        )),
-      ),
-    );
-  }
 }
 
 class TextInputField extends StatelessWidget {

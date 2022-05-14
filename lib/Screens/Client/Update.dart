@@ -1,25 +1,47 @@
 import 'dart:ui';
 
-import 'package:enlatadosmgapp/Service/ClientService.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
-class CreateClient extends StatefulWidget {
-  const CreateClient({Key? key}) : super(key: key);
+import '../../Service/ClientService.dart';
+
+class UpdateClient extends StatefulWidget {
+  const UpdateClient({Key? key, required this.id}) : super(key: key);
+
+  final int id;
 
   @override
-  State<CreateClient> createState() => _CreateClientState();
+  State<UpdateClient> createState() => _UpdateClientState();
 }
 
-class _CreateClientState extends State<CreateClient> {
+class _UpdateClientState extends State<UpdateClient> {
   TextEditingController cuiController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController surnameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   ClientService clientService = ClientService();
-  var _key = new GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    clientService.getClient(widget.id).then((value) => {
+          cuiController.text = value.cui,
+          nameController.text = value.name,
+          surnameController.text = value.surname,
+          phoneController.text = value.phone,
+          addressController.text = value.address
+        });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -28,7 +50,7 @@ class _CreateClientState extends State<CreateClient> {
         BackgroundImage(image: 'assets/latas.jpg'),
         Scaffold(
           appBar: AppBar(
-            title: Text("Agregar cliente"),
+            title: Text("Modificar datos de cliente"),
             backgroundColor: Colors.transparent,
           ),
           backgroundColor: Colors.transparent,
@@ -88,6 +110,7 @@ class _CreateClientState extends State<CreateClient> {
                       inputType: TextInputType.number,
                       inputAction: TextInputAction.next,
                       controller: cuiController,
+                      enabled: false,
                     ),
                     TextInputField(
                       icon: FontAwesomeIcons.user,
@@ -200,7 +223,7 @@ class _CreateClientState extends State<CreateClient> {
                           }
                         },
                         child: Text(
-                          "Guardar",
+                          "Actualizar",
                           style: TextStyle(
                                   fontSize: 22,
                                   color: Colors.white,
@@ -335,7 +358,8 @@ class TextInputField extends StatelessWidget {
       this.inputType,
       this.inputAction,
       this.controller,
-      this.minLines})
+      this.minLines,
+      this.enabled})
       : super(key: key);
 
   final IconData icon;
@@ -344,6 +368,7 @@ class TextInputField extends StatelessWidget {
   final TextInputAction? inputAction;
   final TextEditingController? controller;
   final int? minLines;
+  final bool? enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -360,6 +385,7 @@ class TextInputField extends StatelessWidget {
         ),
         child: Center(
           child: TextField(
+            enabled: enabled,
             minLines: minLines,
             maxLines: 10,
             controller: controller,

@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../Models/Client.dart';
 
 class ClientService {
-  String url = "http://192.168.0.8:8080/";
+  String url = "http://192.168.1.8:8080/";
 
   Future<List<ClientM>> getClients(BuildContext context, String? order) async {
     var endpoint = '${url}client/all?order=${order}';
@@ -38,7 +38,7 @@ class ClientService {
 
   Future addClient(String cui, String name, String surname, String phone,
       String address) async {
-    var uri = url + "client/add";
+    var endpoint = '${url}client/add';
     Map body = {
       'cui': int.parse(cui),
       'name': name,
@@ -46,8 +46,9 @@ class ClientService {
       'phone': phone,
       'address': address
     };
+    print(endpoint);
 
-    final Response response = await http.post(Uri.parse(uri),
+    final Response response = await http.post(Uri.parse(endpoint),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -56,7 +57,65 @@ class ClientService {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      throw Exception("Error bro");
+      throw Exception(response.body);
+    }
+  }
+
+  Future updateClient(String cui, String name, String surname, String phone,
+      String address) async {
+    var endpoint = '${url}client/update/${int.parse(cui)}';
+    Map body = {
+      'name': name,
+      'surname': surname,
+      'phone': phone,
+      'address': address
+    };
+
+    final Response response = await http.post(Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: json.encode(body));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+  Future<ClientM> getClient(int id) async {
+    var endpoint = '${url}client/${id}';
+    final Response response = await http.get(
+      Uri.parse(endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return ClientM.fromJson(data);
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+  Future deleteClient(int id) async {
+    print('ID: ${id}');
+    var endpoint = '${url}client/delete/${id}';
+    print(endpoint);
+    final Response resp = await http.delete(
+      Uri.parse(endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    );
+    if (resp.statusCode == 200) {
+      return json.decode(resp.body);
+    } else {
+      throw Exception(resp.body);
     }
   }
 }
