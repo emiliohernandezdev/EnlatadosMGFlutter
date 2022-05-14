@@ -31,19 +31,7 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.light),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
-          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
-          colorScheme: ColorScheme(
-              primary: Colors.red,
-              secondary: Colors.blue,
-              onSecondary: Colors.white,
-              onError: Colors.green,
-              brightness: Brightness.dark,
-              onBackground: Colors.black,
-              error: Colors.red,
-              onPrimary: Colors.red,
-              surface: Colors.black,
-              onSurface: Colors.white,
-              background: Colors.black)),
+          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme)),
       themeMode: ThemeMode.light,
     );
   }
