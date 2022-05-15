@@ -42,7 +42,7 @@ class _ReportsState extends State<Reports> {
                 )
               ],
           body: GridView.count(
-            physics: ScrollPhysics(),
+            physics: BouncingScrollPhysics(),
             shrinkWrap: true,
             primary: false,
             padding: const EdgeInsets.all(20),

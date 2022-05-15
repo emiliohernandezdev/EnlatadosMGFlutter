@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 import '../Models/Dealer.dart';
 
 class DealerService {
-  String url = "http://192.168.1.8:8080/";
+  String url = "http://192.168.1.10:8080/";
 
   Future<List<Dealer>> getDealers(BuildContext context) async {
     var endpoint = '${url}/dealer/all';
@@ -55,6 +55,24 @@ class DealerService {
       return json.decode(response.body);
     } else {
       throw Exception("Error bro");
+    }
+  }
+
+  Future deleteDealer(int id) async {
+    print('CUI de cliente: ${id}');
+    var endpoint = '${url}dealer/delete/${id}';
+    print(endpoint);
+    final Response resp = await http.delete(
+      Uri.parse(endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    );
+    if (resp.statusCode == 200) {
+      return json.decode(resp.body);
+    } else {
+      throw Exception(resp.body);
     }
   }
 }

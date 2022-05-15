@@ -1,6 +1,5 @@
-import 'package:enlatadosmgapp/Screens/Auth/Login.dart';
 import 'package:enlatadosmgapp/Screens/Client/Create.dart';
-import 'package:enlatadosmgapp/Screens/Client/Update.dart';
+import 'package:enlatadosmgapp/Screens/Dealer/Create.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Screens/Welcome/Welcome.dart';
@@ -25,13 +24,15 @@ class _MyAppState extends State<MyApp> {
       home: WelcomeScreen(),
       routes: {
         '/client/create': (context) => const CreateClient(),
+        '/dealer/create': ((context) => const CreateDealer())
       },
       theme: ThemeData(
-          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
+        primarySwatch: Colors.red,
+          textTheme: GoogleFonts.dmSansTextTheme(Theme.of(context).textTheme),
           brightness: Brightness.light),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
-          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme)),
+          textTheme: GoogleFonts.dmSansTextTheme(Theme.of(context).textTheme)),
       themeMode: ThemeMode.light,
     );
   }

@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 import '../Models/User.dart';
 
 class AuthService {
-  String url = "http://192.168.1.8:8080/";
+  String url = "http://192.168.1.10:8080/";
 
   Future<List<User>> getUsers(BuildContext context) async {
     var endpoint = '${url}/user/all';
@@ -78,6 +78,14 @@ class AuthService {
       const snackBar = SnackBar(
           content: Text(
               "404. Ocurrió un error extraño, vuelve a intentarlo más tarde, por favor."),
+          elevation: 15,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }else{
+      const snackBar = SnackBar(
+          content: Text(
+              "Error desconocido :("),
           elevation: 15,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))));

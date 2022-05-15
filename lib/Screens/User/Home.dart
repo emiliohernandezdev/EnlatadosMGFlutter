@@ -64,7 +64,7 @@ class _UserHomeState extends State<UserHome> {
     setState(() {
       bottomSelectedIndex = index;
       pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.easeOutQuad);
+          duration: Duration(milliseconds: 500), curve: Curves.easeInOutCirc);
     });
   }
 

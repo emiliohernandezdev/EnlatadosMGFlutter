@@ -50,7 +50,7 @@ class _VehiclesState extends State<Vehicles> {
                 ListView.builder(
                     itemCount: snapshot.data.length,
                     shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
+                    physics: BouncingScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
                       List<Vehicle> data = snapshot.data;
                       return SingleChildScrollView(
