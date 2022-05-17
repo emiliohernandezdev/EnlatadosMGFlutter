@@ -3,6 +3,8 @@ import 'package:enlatadosmgapp/Screens/Vehicle/Create.dart';
 import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'dart:math' as math;
 
 class Vehicles extends StatefulWidget {
   const Vehicles({Key? key}) : super(key: key);
@@ -15,200 +17,315 @@ class _VehiclesState extends State<Vehicles> {
   VehicleService vehicleService = VehicleService();
   @override
   Widget build(BuildContext context) {
+    List<Vehicle> data = [];
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text("Vehículos"),
-      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreateVehicle()),
-          );
-        },
+        backgroundColor: Colors.red,
         child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, '/vehicle/create')
+              .then((value) => setState(() {}));
+        },
+        tooltip: 'Agregar vehículo',
       ),
-      body: FutureBuilder<List<Vehicle>>(
-          future: vehicleService.getVehicles(context),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: Card(
-                  child: Text("No existen"),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Card(
-                  color: Colors.red,
-                  child: Text("Error al cargar la data :("),
-                ),
-              );
-            } else {
-              return Stack(children: [
-                ListView.builder(
-                    itemCount: snapshot.data.length,
-                    shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      List<Vehicle> data = snapshot.data;
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Card(
-                            color: Colors.white,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  onLongPress: () {
-                                    showModalBottomSheet(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0),
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerbox) => [
+          SliverAppBar(
+            backgroundColor: Colors.red,
+            expandedHeight: 260,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.asset("assets/latas.jpg", fit: BoxFit.cover),
+            ),
+            floating: true,
+            elevation: 12.0,
+            pinned: true,
+            centerTitle: true,
+            title: Text("Vehículos"),
+            actions: [],
+          )
+        ],
+        body: FutureBuilder<List<Vehicle>>(
+            future: vehicleService.getVehicles(context),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.data.length > 0) {
+                  return RefreshIndicator(
+                    edgeOffset: 50,
+                    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                    color: Colors.red,
+                    child: ListView.builder(
+                        padding: EdgeInsets.all(12),
+                        itemCount: snapshot.data.length,
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          data = snapshot.data;
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Dismissible(
+                              key: UniqueKey(),
+                              background: Container(
+                                  color: Colors.blue,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 15),
+                                  alignment: Alignment.centerRight,
+                                  child: Row(
+                                    children: [
+                                      const Icon(FontAwesomeIcons.pencil,
+                                          color: Colors.white),
+                                      SizedBox(width: 8.0),
+                                      Text("Editar",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 19.0))
+                                    ],
+                                  )),
+                              secondaryBackground: Container(
+                                  color: Colors.red,
+                                  alignment: Alignment.centerRight,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Icon(FontAwesomeIcons.trash,
+                                          color: Colors.white),
+                                      SizedBox(width: 8.0),
+                                      Text("Eliminar",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 19.0))
+                                    ],
+                                  )),
+                              confirmDismiss: (direction) async {
+                                if (direction == DismissDirection.endToStart) {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Text(
+                                              "¿Seguro que deseas eliminar el cliente?"),
+                                          actions: [
+                                            FlatButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("Cancelar")),
+                                            FlatButton(
+                                                onPressed: () {
+                                                  vehicleService
+                                                      .deleteVehicle(int.parse(
+                                                          data[index]
+                                                              .licensePlate))
+                                                      .then((value) => {
+                                                            if (value[
+                                                                    "success"] ==
+                                                                true)
+                                                              {
+                                                                data.removeAt(
+                                                                    index),
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                        SnackBar(
+                                                                  content: Text(
+                                                                      value[
+                                                                          "message"]),
+                                                                )),
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(),
+                                                                setState(() {
+                                                                  vehicleService
+                                                                      .getVehicles(
+                                                                          context)
+                                                                      .then(
+                                                                          (value) =>
+                                                                              {
+                                                                                data = value
+                                                                              });
+                                                                })
+                                                              }
+                                                            else
+                                                              {
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(SnackBar(
+                                                                        content:
+                                                                            Text(value["message"])))
+                                                              }
+                                                          })
+                                                      .catchError((err) =>
+                                                          {print(err)});
+                                                },
+                                                child: Text("Eliminar",
+                                                    style: TextStyle(
+                                                        color: Colors.red)))
+                                          ],
+                                        );
+                                      });
+                                } else {}
+                              },
+                              child: Card(
+                                  color: Colors.white,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder:
+                                                  (BuildContext bc) =>
+                                                      AlertDialog(
+                                                        contentPadding:
+                                                            EdgeInsets.zero,
+                                                        title: Center(
+                                                          child: Text(
+                                                              "Detalle de cliente:",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      22.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600)),
+                                                        ),
+                                                        content: Card(
+                                                          child: Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: <Widget>[
+                                                              Divider(),
+                                                              ListTile(
+                                                                leading:
+                                                                    CircleAvatar(
+                                                                  radius: 35.0,
+                                                                  backgroundColor: Color((math.Random().nextDouble() *
+                                                                              0xFFFFFF)
+                                                                          .toInt())
+                                                                      .withOpacity(
+                                                                          1.0),
+                                                                  child: Icon(
+                                                                      FontAwesomeIcons
+                                                                          .car,
+                                                                      color: Color(
+                                                                          int.parse(
+                                                                              data[index].color))),
+                                                                ),
+                                                                title: Wrap(
+                                                                  children: [
+                                                                    Text(
+                                                                        "Placa: ",
+                                                                        style: TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            fontSize: 19.0)),
+                                                                    Text(
+                                                                        data[index]
+                                                                            .licensePlate,
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                19.0))
+                                                                  ],
+                                                                ),
+                                                                subtitle: Wrap(
+                                                                  children: [
+                                                                    Text(
+                                                                        "Marca: ",
+                                                                        style: TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            fontSize: 19.0)),
+                                                                    Text(
+                                                                        data[index]
+                                                                            .brand,
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                19.0)),
+                                                                    Text(
+                                                                        "Modelo: ",
+                                                                        style: TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            fontSize: 19.0)),
+                                                                    Text(
+                                                                        data[index]
+                                                                            .model,
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                19.0)),
+                                                                  ],
+                                                                ),
+                                                                isThreeLine:
+                                                                    true,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        actions: [
+                                                          MaterialButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: Text(
+                                                                "Cerrar",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        17.0)),
+                                                          )
+                                                        ],
+                                                      ));
+                                        },
+                                        leading: CircleAvatar(
+                                          backgroundColor: Color(
+                                              (int.parse(data[index].color))),
+                                          child: Icon(FontAwesomeIcons.car,
+                                              color: Colors.black),
                                         ),
-                                        context: context,
-                                        builder: (context) {
-                                          return Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              SizedBox(height: 30),
-                                              Text(
-                                                  "Acciones disponibles para: \n" +
-                                                      data[index].licensePlate,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
-                                              SizedBox(height: 20),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor:
-                                                        Colors.blue,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.edit,
-                                                  color: Colors.white,
-                                                ),
-                                                label: Text(
-                                                  'Editar',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor: Colors.red,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.delete,
-                                                  color: Colors.white,
-                                                ),
-                                                label: Text(
-                                                  'Eliminar',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.visibility,
-                                                  color: Colors.white,
-                                                ),
-                                                label: Text(
-                                                  'Ver',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                              //Divider(),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    minimumSize:
-                                                        const Size.fromHeight(
-                                                            50),
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .zero)),
-                                                onPressed: () =>
-                                                    {Navigator.pop(context)},
-                                                icon: Icon(
-                                                  Icons.close,
-                                                  color: Colors.red,
-                                                ),
-                                                label: Text(
-                                                  'Cancelar',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        });
-                                  },
-                                  leading: CircleAvatar(
-                                    radius: 25.0,
-                                    backgroundColor:
-                                        Color(int.parse(data[index].color))
-                                            .withOpacity(0.3),
-                                    child: Icon(FontAwesomeIcons.carSide,
-                                        color: Color(
-                                            int.parse(data[index].color))),
-                                  ),
-                                  title: Text(data[index].licensePlate,
-                                      style: TextStyle(fontSize: 18)),
-                                  subtitle: Text(
-                                    'Marca: ' +
-                                        data[index].brand +
-                                        "\nModelo: " +
-                                        data[index].model,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            )),
+                                        title: Text(data[index].licensePlate,
+                                            style: TextStyle(fontSize: 18)),
+                                        subtitle: Text(
+                                          "Marca: " + data[index].brand,
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          );
+                        }),
+                    onRefresh: () async {
+                      const snackBar = SnackBar(
+                        content: Text('Registros actualizados'),
                       );
-                    }),
-              ]);
-            }
-            return CircularProgressIndicator();
-          }),
+
+                      vehicleService
+                          .getVehicles(context)
+                          .then((value) => setState(() {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                                data = value;
+                              }))
+                          .catchError((err) => {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(content: Text(err))),
+                              });
+                    },
+                  );
+                } else {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("No hay registros",
+                          style: GoogleFonts.dmSans(fontSize: 28.0))
+                    ],
+                  );
+                }
+              }
+              return CircularProgressIndicator();
+            }),
+      ),
     );
   }
 }

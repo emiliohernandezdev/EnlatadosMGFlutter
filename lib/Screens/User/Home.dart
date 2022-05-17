@@ -1,5 +1,6 @@
 import 'package:enlatadosmgapp/Screens/Dealer/Dealers.dart';
 import 'package:enlatadosmgapp/Screens/Report/Reports.dart';
+import 'package:enlatadosmgapp/Screens/User/Profile.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -40,11 +41,11 @@ class _UserHomeState extends State<UserHome> {
       allowImplicitScrolling: false,
       physics: NeverScrollableScrollPhysics(),
       children: <Widget>[
-        const Reports(),
         const Clients(),
         const Dealers(),
         const Vehicles(),
-        const Orders()
+        const Orders(),
+        const ProfilePage()
       ],
     );
   }
@@ -64,7 +65,7 @@ class _UserHomeState extends State<UserHome> {
     setState(() {
       bottomSelectedIndex = index;
       pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOutCirc);
+          duration: Duration(milliseconds: 500), curve: Curves.easeOutCirc);
     });
   }
 
@@ -87,8 +88,6 @@ class _UserHomeState extends State<UserHome> {
           unselectedItemColor: Colors.black,
           items: [
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.diagramProject), label: "Reportes"),
-            BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.businessTime), label: "Clientes"),
             BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.peopleCarryBox),
@@ -96,7 +95,9 @@ class _UserHomeState extends State<UserHome> {
             BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.car), label: "Vehículos"),
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.box), label: "Órdenes")
+                icon: Icon(FontAwesomeIcons.box), label: "Órdenes"),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.user), label: "Perfil")
           ],
         ));
   }

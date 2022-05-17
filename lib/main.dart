@@ -1,5 +1,7 @@
 import 'package:enlatadosmgapp/Screens/Client/Create.dart';
 import 'package:enlatadosmgapp/Screens/Dealer/Create.dart';
+import 'package:enlatadosmgapp/Screens/User/Profile.dart';
+import 'package:enlatadosmgapp/Screens/Vehicle/Create.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Screens/Welcome/Welcome.dart';
@@ -23,11 +25,13 @@ class _MyAppState extends State<MyApp> {
       title: 'Enlatados MG',
       home: WelcomeScreen(),
       routes: {
+        '/user/profile': ((context) => const ProfilePage()),
         '/client/create': (context) => const CreateClient(),
-        '/dealer/create': ((context) => const CreateDealer())
+        '/dealer/create': ((context) => const CreateDealer()),
+        '/vehicle/create': ((context) => const CreateVehicle()),
       },
       theme: ThemeData(
-        primarySwatch: Colors.red,
+          primarySwatch: Colors.red,
           textTheme: GoogleFonts.dmSansTextTheme(Theme.of(context).textTheme),
           brightness: Brightness.light),
       darkTheme: ThemeData(

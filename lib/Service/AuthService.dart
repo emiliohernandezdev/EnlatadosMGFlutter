@@ -1,13 +1,14 @@
 import 'dart:convert' as convert;
 import 'dart:convert';
 import 'package:enlatadosmgapp/Screens/User/Home.dart';
+import 'package:enlatadosmgapp/Service/StorageService.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import '../Models/User.dart';
 
 class AuthService {
-  String url = "http://192.168.1.10:8080/";
+  String url = "http://192.168.1.8:8080/";
 
   Future<List<User>> getUsers(BuildContext context) async {
     var endpoint = '${url}/user/all';
@@ -35,6 +36,31 @@ class AuthService {
     }
   }
 
+  Future getUserProfile(BuildContext context) async {
+    var endpoint = '${url}/user/profile';
+    StorageService storage = StorageService();
+    Map<String, String> headers = {};
+
+    storage.getKey("jwt").then((value) => {
+          headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': value
+          }
+        });
+    final response = await http.get(Uri.parse(endpoint), headers: headers);
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      const snackBar = SnackBar(
+          content: Text("Ocurrió un error al obtener el perfil del usuario."),
+          elevation: 15,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   login(String id, String password, BuildContext context) async {
     Map data = {'id': id, 'password': password};
 
@@ -48,14 +74,17 @@ class AuthService {
 
     print(response.statusCode);
     if (response.statusCode == 200) {
+      StorageService storage = StorageService();
       Map<String, dynamic> resp = jsonDecode(response.body);
       if (resp["success"] == true && resp["result"] != null) {
+        print(resp);
         const snackBar = SnackBar(
             content: Text('Sesión iniciada correctamente'),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10))));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         //Navigator.of(context).pop();
+        storage.setKey("jwt", "1");
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => UserHome()),
             (Route<dynamic> route) => false);
@@ -82,10 +111,9 @@ class AuthService {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }else{
+    } else {
       const snackBar = SnackBar(
-          content: Text(
-              "Error desconocido :("),
+          content: Text("Error desconocido :("),
           elevation: 15,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))));
