@@ -88,7 +88,7 @@ class _UserHomeState extends State<UserHome> {
           unselectedItemColor: Colors.black,
           items: [
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.businessTime), label: "Clientes"),
+                icon: Icon(FontAwesomeIcons.users), label: "Clientes"),
             BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.peopleCarryBox),
                 label: "Repartidores"),

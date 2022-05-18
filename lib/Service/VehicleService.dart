@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../Models/Client.dart';
 
 class VehicleService {
-  String url = "http://192.168.1.8:8080/";
+  String url = "http://192.168.1.9:8080/";
 
   Future<List<Vehicle>> getVehicles(BuildContext context) async {
     var endpoint = '${url}vehicle/all';

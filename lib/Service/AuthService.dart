@@ -1,14 +1,16 @@
 import 'dart:convert' as convert;
 import 'dart:convert';
+import 'dart:io';
 import 'package:enlatadosmgapp/Screens/User/Home.dart';
 import 'package:enlatadosmgapp/Service/StorageService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import '../Models/User.dart';
 
 class AuthService {
-  String url = "http://192.168.1.8:8080/";
+  String url = "http://192.168.1.9:8080/";
 
   Future<List<User>> getUsers(BuildContext context) async {
     var endpoint = '${url}/user/all';
@@ -38,26 +40,35 @@ class AuthService {
 
   Future getUserProfile(BuildContext context) async {
     var endpoint = '${url}/user/profile';
-    StorageService storage = StorageService();
+    final FlutterSecureStorage storage = FlutterSecureStorage();
     Map<String, String> headers = {};
 
-    storage.getKey("jwt").then((value) => {
+    String token = "";
+    await storage.read(key: "jwt")
+    .then((value) => {
+      token = (value != null) ? value : "",
+
           headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': value
+            HttpHeaders.authorizationHeader: token
           }
         });
     final response = await http.get(Uri.parse(endpoint), headers: headers);
+    Map<String, dynamic> resp = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      if(resp["success"] == true && resp["result"] != null){
+        return resp["result"];
+      }
     } else {
+      print(resp);
       const snackBar = SnackBar(
           content: Text("Ocurrió un error al obtener el perfil del usuario."),
           elevation: 15,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return {};
     }
   }
 
@@ -74,7 +85,7 @@ class AuthService {
 
     print(response.statusCode);
     if (response.statusCode == 200) {
-      StorageService storage = StorageService();
+      FlutterSecureStorage storage = FlutterSecureStorage();
       Map<String, dynamic> resp = jsonDecode(response.body);
       if (resp["success"] == true && resp["result"] != null) {
         print(resp);
@@ -84,7 +95,7 @@ class AuthService {
                 borderRadius: BorderRadius.all(Radius.circular(10))));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         //Navigator.of(context).pop();
-        storage.setKey("jwt", "1");
+        await storage.write(key: "jwt", value: resp["result"]);
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => UserHome()),
             (Route<dynamic> route) => false);
