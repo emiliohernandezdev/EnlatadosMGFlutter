@@ -61,12 +61,13 @@ class ClientService {
     }
   }
 
-  Future<String> getGraph() async {
+  Future getGraph() async {
     var endpoint = '${url}client/graphviz';
 
     final Response response = await http.get(Uri.parse(endpoint), headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Accept': 'application/json',
+      'Charset': 'utf-8'
     });
     if (response.statusCode == 200) {
       return json.decode(response.body);

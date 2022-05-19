@@ -103,7 +103,7 @@ class _VehiclesState extends State<Vehicles> {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           content: Text(
-                                              "¿Seguro que deseas eliminar el cliente?"),
+                                              "¿Seguro que deseas eliminar el vehículo?"),
                                           actions: [
                                             FlatButton(
                                                 onPressed: () {
@@ -181,7 +181,7 @@ class _VehiclesState extends State<Vehicles> {
                                                             EdgeInsets.zero,
                                                         title: Center(
                                                           child: Text(
-                                                              "Detalle de cliente:",
+                                                              "Detalle del vehículo:",
                                                               style: TextStyle(
                                                                   fontSize:
                                                                       22.0,

@@ -38,6 +38,7 @@ class AuthService {
     }
   }
 
+
   Future getUserProfile(BuildContext context) async {
     var endpoint = '${url}/user/profile';
     final FlutterSecureStorage storage = FlutterSecureStorage();

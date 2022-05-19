@@ -48,6 +48,7 @@ dependencies:
   flutter_emoji: ^2.4.0
   webview_flutter: ^3.0.4
   flutter_secure_storage: ^5.0.2
+  gviz: ^0.4.0
 
 dev_dependencies:
   flutter_test:

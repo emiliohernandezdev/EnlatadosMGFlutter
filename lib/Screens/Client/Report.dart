@@ -1,9 +1,10 @@
+import 'dart:convert';
+
 import 'package:enlatadosmgapp/Service/ClientService.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:gviz/gviz.dart';
+
 
 class ClientsReport extends StatefulWidget {
   const ClientsReport({Key? key}) : super(key: key);
@@ -14,15 +15,17 @@ class ClientsReport extends StatefulWidget {
 
 class _ClientsReportState extends State<ClientsReport> {
   final ClientService _clientService = ClientService();
-  String graph = "";
+  String url = "";
+
   @override
   void initState() {
     super.initState();
     _clientService.getGraph().then((value) => {
+
           setState(() {
-            graph = value;
+            url = 'https://quickchart.io/graphviz?format=png&graph=${Uri.encodeQueryComponent(value["result"])}}';
           }),
-          print(value)
+          print(url)
         });
   }
 
@@ -34,11 +37,8 @@ class _ClientsReportState extends State<ClientsReport> {
       ),
       body: WebView(
         initialUrl:
-            'https://quickchart.io/graphviz?format=png&graph=${graph}',
-        javascriptMode: JavascriptMode.unrestricted,
-        onPageFinished: (String c){
-          print(c);
-        },
+            url,
+        javascriptMode: JavascriptMode.unrestricted
       ),
     );
   }
