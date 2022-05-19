@@ -10,7 +10,7 @@ import 'package:http/http.dart';
 import '../Models/User.dart';
 
 class AuthService {
-  String url = "http://192.168.1.9:8080/";
+  String url = "http://127.0.0.1:8080/";
 
   Future<List<User>> getUsers(BuildContext context) async {
     var endpoint = '${url}/user/all';
@@ -38,17 +38,14 @@ class AuthService {
     }
   }
 
-
   Future getUserProfile(BuildContext context) async {
     var endpoint = '${url}/user/profile';
     final FlutterSecureStorage storage = FlutterSecureStorage();
     Map<String, String> headers = {};
 
     String token = "";
-    await storage.read(key: "jwt")
-    .then((value) => {
-      token = (value != null) ? value : "",
-
+    await storage.read(key: "jwt").then((value) => {
+          token = (value != null) ? value : "",
           headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -58,7 +55,7 @@ class AuthService {
     final response = await http.get(Uri.parse(endpoint), headers: headers);
     Map<String, dynamic> resp = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      if(resp["success"] == true && resp["result"] != null){
+      if (resp["success"] == true && resp["result"] != null) {
         return resp["result"];
       }
     } else {

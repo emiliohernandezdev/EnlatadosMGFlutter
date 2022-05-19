@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../Models/Client.dart';
 
 class ClientService {
-  String url = "http://192.168.1.9:8080/";
+  String url = "http://127.0.0.1:8080/";
 
   Future<List<ClientM>> getClients(BuildContext context, String? order) async {
     var endpoint = '${url}client/all?order=${order}';

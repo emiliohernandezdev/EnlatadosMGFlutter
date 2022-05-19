@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 import '../Models/Dealer.dart';
 
 class DealerService {
-  String url = "http://192.168.1.9:8080/";
+  String url = "http://127.0.0.1:8080/";
 
   Future<List<Dealer>> getDealers(BuildContext context) async {
     var endpoint = '${url}/dealer/all';

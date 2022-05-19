@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:gviz/gviz.dart';
 
-
 class ClientsReport extends StatefulWidget {
   const ClientsReport({Key? key}) : super(key: key);
 
@@ -21,9 +20,9 @@ class _ClientsReportState extends State<ClientsReport> {
   void initState() {
     super.initState();
     _clientService.getGraph().then((value) => {
-
           setState(() {
-            url = 'https://quickchart.io/graphviz?format=png&graph=${Uri.encodeQueryComponent(value["result"])}}';
+            url =
+                'https://quickchart.io/graphviz?format=png&graph=${Uri.encodeQueryComponent(value["result"])}';
           }),
           print(url)
         });
@@ -35,10 +34,9 @@ class _ClientsReportState extends State<ClientsReport> {
       appBar: AppBar(
         title: Text("Reporte Árbol AVL de Clientes"),
       ),
-      body: WebView(
-        initialUrl:
-            url,
-        javascriptMode: JavascriptMode.unrestricted
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [Text(url)],
       ),
     );
   }

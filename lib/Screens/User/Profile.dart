@@ -51,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: Center(
                                   child: CircleAvatar(
                                       backgroundColor: Colors.blue,
+                                      onBackgroundImageError: (e, c) => {},
                                       backgroundImage: NetworkImage(
                                           "https://imgs.search.brave.com/W-a8jTNwC_Xtpx85doTKNJng7qhB-nTQLJFoKNo_u2A/rs:fit:1200:1200:1/g:ce/aHR0cDovL3BsdXNw/bmcuY29tL2ltZy1w/bmcvdXNlci1wbmct/aWNvbi1kb3dubG9h/ZC1pY29ucy1sb2dv/cy1lbW9qaXMtdXNl/cnMtMjI0MC5wbmc"),
                                       radius: 75),
@@ -67,21 +68,24 @@ class _ProfilePageState extends State<ProfilePage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text("Nombre:",
-                                    textAlign: TextAlign.left,
-                                  style: GoogleFonts.dmSans(fontSize: 16)),
+                                        textAlign: TextAlign.left,
+                                        style:
+                                            GoogleFonts.dmSans(fontSize: 16)),
                                     TextFormField(
                                       initialValue: snapshot.data["name"],
                                     ),
                                     Divider(),
                                     Text("Apellido:",
-                                  style: GoogleFonts.dmSans(fontSize: 16)),
-                                  TextFormField(
+                                        style:
+                                            GoogleFonts.dmSans(fontSize: 16)),
+                                    TextFormField(
                                       initialValue: snapshot.data["surname"],
                                     ),
                                     Divider(),
                                     Text("Contraseña:",
-                                  style: GoogleFonts.dmSans(fontSize: 16)),
-                                  TextFormField(
+                                        style:
+                                            GoogleFonts.dmSans(fontSize: 16)),
+                                    TextFormField(
                                       initialValue: snapshot.data["password"],
                                     ),
                                   ],
