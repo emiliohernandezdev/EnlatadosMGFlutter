@@ -1,5 +1,7 @@
 import 'package:enlatadosmgapp/Models/Dealer.dart';
 import 'package:enlatadosmgapp/Screens/Dealer/Create.dart';
+import 'package:enlatadosmgapp/Screens/Dealer/Report.dart';
+import 'package:enlatadosmgapp/Screens/Dealer/Update.dart';
 import 'package:enlatadosmgapp/Service/DealerService.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,7 +21,6 @@ class _DealersState extends State<Dealers> {
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
@@ -63,6 +64,17 @@ class _DealersState extends State<Dealers> {
             pinned: true,
             centerTitle: true,
             title: Text("Repartidores"),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DealersReport()));
+                  },
+                  icon: Icon(FontAwesomeIcons.diagramProject),
+                  tooltip: "Generar reporte de cola de repartidores")
+            ],
           )
         ],
         body: FutureBuilder<List<Dealer>>(
@@ -75,7 +87,7 @@ class _DealersState extends State<Dealers> {
                     triggerMode: RefreshIndicatorTriggerMode.anywhere,
                     color: Colors.red,
                     child: ListView.builder(
-                      padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
                         itemCount: snapshot.data.length,
                         shrinkWrap: true,
                         physics: BouncingScrollPhysics(),
@@ -182,7 +194,20 @@ class _DealersState extends State<Dealers> {
                                           ],
                                         );
                                       });
-                                } else {}
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => UpdateDealer(
+                                              id: int.parse(data[index]
+                                                  .cui)))).then((value) => {
+                                        setState(() {
+                                          _dealerService
+                                              .getDealers(context)
+                                              .then((res) => {data = res});
+                                        })
+                                      });
+                                }
                               },
                               child: Card(
                                   color: Colors.white,

@@ -10,7 +10,7 @@ import 'package:http/http.dart';
 import '../Models/User.dart';
 
 class AuthService {
-  String url = "http://127.0.0.1:8080/";
+  String url = "http://192.168.1.13:8080/";
 
   Future<List<User>> getUsers(BuildContext context) async {
     var endpoint = '${url}/user/all';
@@ -35,6 +35,21 @@ class AuthService {
               borderRadius: BorderRadius.all(Radius.circular(10))));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return <User>[];
+    }
+  }
+
+  Future<String> getGraph() async {
+    var endpoint = '${url}user/graphviz';
+
+    final Response response = await http.get(Uri.parse(endpoint), headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Accept': 'application/json',
+      'Charset': 'utf-8'
+    });
+    if (response.statusCode == 200) {
+      return response.body.toString();
+    } else {
+      throw Exception(response.body);
     }
   }
 

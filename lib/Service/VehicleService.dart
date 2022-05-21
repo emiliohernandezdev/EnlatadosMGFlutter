@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../Models/Client.dart';
 
 class VehicleService {
-  String url = "http://127.0.0.1:8080/";
+  String url = "http://192.168.1.13:8080/";
 
   Future<List<Vehicle>> getVehicles(BuildContext context) async {
     var endpoint = '${url}vehicle/all';
@@ -61,8 +61,8 @@ class VehicleService {
     }
   }
 
-  Future deleteVehicle(int id) async {
-    var endpoint = '${url}vehicle/delete/${id}';
+  Future deleteVehicle(String plate) async {
+    var endpoint = '${url}vehicle/delete/${plate}';
     print(endpoint);
     final Response resp = await http.delete(
       Uri.parse(endpoint),
@@ -75,6 +75,63 @@ class VehicleService {
       return json.decode(resp.body);
     } else {
       throw Exception(resp.body);
+    }
+  }
+
+  Future<Vehicle> getVehicle(String lp) async {
+    var endpoint = '${url}vehicle/${lp}';
+    final Response response = await http.get(
+      Uri.parse(endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return Vehicle.fromJson(data);
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+
+
+
+  Future updateVehicle(String last, String licensePlate, String brand, String color, String year, String model) async {
+    var endpoint = '${url}vehicle/update/${last}';
+    Map body = {
+      'licensePlate': licensePlate,
+      'brand': brand,
+      'color': color,
+      'year': int.parse(year),
+      'model': model,
+    };
+
+    final Response response = await http.patch(Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: json.encode(body));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+  Future<String> getGraph() async {
+    var endpoint = '${url}vehicle/graphviz';
+
+    final Response response = await http.get(Uri.parse(endpoint), headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    if (response.statusCode == 200) {
+      return response.body.toString();
+    } else {
+      throw Exception(response.body);
     }
   }
 }

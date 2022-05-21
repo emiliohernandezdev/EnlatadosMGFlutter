@@ -1,64 +1,47 @@
 import 'dart:ui';
 
-import 'package:enlatadosmgapp/Service/ClientService.dart';
-import 'package:enlatadosmgapp/Service/DealerService.dart';
-import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:select_form_field/select_form_field.dart';
 
-class CreateVehicle extends StatefulWidget {
-  const CreateVehicle({Key? key}) : super(key: key);
+import '../../Service/DealerService.dart';
+
+class UpdateDealer extends StatefulWidget {
+  const UpdateDealer({Key? key, required this.id}) : super(key: key);
+
+  final int id;
 
   @override
-  State<CreateVehicle> createState() => _CreateVehicleState();
+  State<UpdateDealer> createState() => _UpdateDealerState();
 }
 
-class _CreateVehicleState extends State<CreateVehicle> {
-  TextEditingController licensePlateController = TextEditingController();
-  TextEditingController brandController = TextEditingController();
-  TextEditingController modelController = TextEditingController();
-  TextEditingController colorController = TextEditingController();
-  TextEditingController yearController = TextEditingController();
-  VehicleService vehicleService = VehicleService();
+class _UpdateDealerState extends State<UpdateDealer> {
+  TextEditingController cuiController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController surnameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController licenseController = TextEditingController();
+  DealerService dealerService = DealerService();
+  final List<Map<String, dynamic>> _licenses = [
+    {
+      'value': 'A',
+      'label': 'Licencia tipo A',
+    },
+    {'value': 'B', 'label': 'Licencia tipo B'},
+    {'value': 'C', 'label': 'Licencia tipo C'},
+  ];
 
-  Color selectedColor = Colors.transparent;
-
-  void _openDialog(String title, Widget content) {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          contentPadding: const EdgeInsets.all(6.0),
-          title: Text(title),
-          content: content,
-          actions: [
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: Navigator.of(context).pop,
-            ),
-            TextButton(
-              child: Text('Aceptar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _openMainColorPicker() async {
-    _openDialog(
-      "Seleccionar color de carro:",
-      MaterialColorPicker(
-        selectedColor: selectedColor,
-        allowShades: true,
-        onColorChange: (Color color) =>
-            setState(() => {selectedColor = color, print(color)}),
-      ),
-    );
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dealerService.getDealer(widget.id).then((value) => {
+          cuiController.text = value.cui,
+          nameController.text = value.name,
+          surnameController.text = value.surname,
+          phoneController.text = value.phone
+        });
   }
 
   @override
@@ -69,7 +52,7 @@ class _CreateVehicleState extends State<CreateVehicle> {
         BackgroundImage(image: 'assets/latas.jpg'),
         Scaffold(
           appBar: AppBar(
-            title: Text("Agregar vehículo"),
+            title: Text("Actualizar repartidor"),
             backgroundColor: Colors.transparent,
           ),
           backgroundColor: Colors.transparent,
@@ -91,8 +74,8 @@ class _CreateVehicleState extends State<CreateVehicle> {
                               0.4,
                             ),
                             child: Icon(
-                              FontAwesomeIcons.car,
-                              color: selectedColor,
+                              FontAwesomeIcons.truckFast,
+                              color: Colors.white,
                               size: size.width * 0.1,
                             ),
                           ),
@@ -124,25 +107,25 @@ class _CreateVehicleState extends State<CreateVehicle> {
                 Column(
                   children: [
                     TextInputField(
-                      icon: FontAwesomeIcons.carRear,
-                      hint: 'Placa',
-                      inputType: TextInputType.text,
+                      icon: FontAwesomeIcons.idCard,
+                      hint: 'CUI',
+                      inputType: TextInputType.number,
                       inputAction: TextInputAction.next,
-                      controller: licensePlateController,
+                      controller: cuiController,
                     ),
                     TextInputField(
-                      icon: FontAwesomeIcons.carRear,
-                      hint: 'Marca',
+                      icon: FontAwesomeIcons.user,
+                      hint: 'Nombre',
                       inputType: TextInputType.text,
                       inputAction: TextInputAction.next,
-                      controller: brandController,
+                      controller: nameController,
                     ),
                     TextInputField(
-                      icon: FontAwesomeIcons.carRear,
-                      hint: 'Modelo',
+                      icon: FontAwesomeIcons.user,
+                      hint: 'Apellido',
                       inputType: TextInputType.text,
                       inputAction: TextInputAction.next,
-                      controller: modelController,
+                      controller: surnameController,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -154,24 +137,69 @@ class _CreateVehicleState extends State<CreateVehicle> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
-                            child: TextButton.icon(
-                          icon: Icon(FontAwesomeIcons.palette,
-                              color: Colors.white),
-                          onPressed: _openMainColorPicker,
-                          label: Text("Seleccionar color del vehículo",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  height: 1.5)),
-                        )),
+                            child: SelectFormField(
+                                textInputAction: TextInputAction.next,
+                                decoration: InputDecoration(
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Icon(
+                                        FontAwesomeIcons.idCard,
+                                        size: 28,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 5.0),
+                                    ),
+                                    hintText: "Tipo de licencia",
+                                    hintStyle: TextStyle(
+                                        color: Colors.white,
+                                        height: 1.5,
+                                        fontSize: 22)),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 22),
+                                type: SelectFormFieldType
+                                    .dropdown, // or can be dialog
+                                labelText: 'Seleccionar tipo de licencia',
+                                items: _licenses,
+                                controller: licenseController)),
                       ),
                     ),
-                    TextInputField(
-                      icon: FontAwesomeIcons.carRear,
-                      hint: 'Año',
-                      inputType: TextInputType.number,
-                      inputAction: TextInputAction.done,
-                      controller: yearController,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Container(
+                        height: size.height * 0.08,
+                        width: size.width * 0.8,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[500]!.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: IntlPhoneField(
+                            controller: phoneController,
+                            dropdownTextStyle:
+                                TextStyle(color: Colors.white, fontSize: 22),
+                            searchText: "Buscar país",
+                            style: TextStyle(color: Colors.white, fontSize: 22),
+                            initialCountryCode: 'GT',
+                            invalidNumberMessage: "Número de teléfono inválido",
+                            disableLengthCheck: true,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "1234-5678",
+                              hintStyle: TextStyle(
+                                  color: Colors.white,
+                                  height: 1.5,
+                                  fontSize: 22),
+                            ),
+                            textInputAction: TextInputAction.next,
+                            dropdownIconPosition: IconPosition.leading,
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                      ),
                     ),
                     SizedBox(
                       height: 25,
@@ -185,23 +213,24 @@ class _CreateVehicleState extends State<CreateVehicle> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          if (licensePlateController.text.isNotEmpty &&
-                              brandController.text.isNotEmpty &&
-                              modelController.text.isNotEmpty &&
-                              yearController.text.isNotEmpty) {
-                            vehicleService
-                                .addVehicle(
-                                    licensePlateController.text,
-                                    brandController.text,
-                                    modelController.text,
-                                    selectedColor.value.toString(),
-                                    yearController.text)
-                                .then((v) => {
-                                      if (v["success"] == true)
+                          if (cuiController.text.isNotEmpty &&
+                              nameController.text.isNotEmpty &&
+                              surnameController.text.isNotEmpty &&
+                              phoneController.text.isNotEmpty &&
+                              licenseController.text.isNotEmpty) {
+                            dealerService
+                                .updateDealer(
+                                    cuiController.text,
+                                    nameController.text,
+                                    surnameController.text,
+                                    phoneController.text,
+                                    licenseController.text)
+                                .then((value) => {
+                                      if (value["success"] == true)
                                         {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                            content: Text(v["message"]),
+                                            content: Text(value["message"]),
                                           )),
                                           Navigator.of(context).pop(),
                                         }
@@ -209,19 +238,24 @@ class _CreateVehicleState extends State<CreateVehicle> {
                                         {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                                  content: Text(v["message"])))
+                                                  content:
+                                                      Text(value["message"])))
                                         }
-                                    })
-                                .catchError((err) => {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(err.toString())))
                                     });
-                            print(selectedColor.value);
-                          } else {}
+                          } else {
+                            const snackBar = SnackBar(
+                                content: Text(
+                                    'Completa toda la información del repartidor.'),
+                                elevation: 15,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          }
                         },
                         child: Text(
-                          "Guardar",
+                          "Actualizar",
                           style: TextStyle(
                                   fontSize: 22,
                                   color: Colors.white,

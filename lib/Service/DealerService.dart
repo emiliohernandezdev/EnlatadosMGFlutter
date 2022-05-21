@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 import '../Models/Dealer.dart';
 
 class DealerService {
-  String url = "http://127.0.0.1:8080/";
+  String url = "http://192.168.1.13:8080/";
 
   Future<List<Dealer>> getDealers(BuildContext context) async {
     var endpoint = '${url}/dealer/all';
@@ -22,8 +22,6 @@ class DealerService {
       }
       return registers;
     } else {
-      print(response.statusCode);
-      print(response.body);
       const snackBar = SnackBar(
           content: Text("Ocurrió un error al obtener los registros."),
           elevation: 15,
@@ -58,6 +56,38 @@ class DealerService {
     }
   }
 
+  Future<String> getGraph() async {
+    var endpoint = '${url}dealer/graphviz';
+
+    final Response response = await http.get(Uri.parse(endpoint), headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    if (response.statusCode == 200) {
+      return response.body.toString();
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+  Future<Dealer> getDealer(int id) async {
+    var endpoint = '${url}dealer/${id}';
+    final Response response = await http.get(
+      Uri.parse(endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return Dealer.fromJson(data);
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+
   Future deleteDealer(int id) async {
     print('CUI de cliente: ${id}');
     var endpoint = '${url}dealer/delete/${id}';
@@ -73,6 +103,29 @@ class DealerService {
       return json.decode(resp.body);
     } else {
       throw Exception(resp.body);
+    }
+  }
+
+  Future updateDealer(String cui, String name, String surname, String phone, String license) async {
+    var endpoint = '${url}dealer/update/${cui}';
+    Map body = {
+      'cui': cui,
+      'name': name,
+      'surname': surname,
+      'license': license,
+      'phone': phone,
+    };
+
+    final Response response = await http.patch(Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: json.encode(body));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception(response.body);
     }
   }
 }

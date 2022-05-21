@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../Models/Client.dart';
 
 class ClientService {
-  String url = "http://127.0.0.1:8080/";
+  String url = "http://192.168.1.13:8080/";
 
   Future<List<ClientM>> getClients(BuildContext context, String? order) async {
     var endpoint = '${url}client/all?order=${order}';
@@ -61,7 +61,7 @@ class ClientService {
     }
   }
 
-  Future getGraph() async {
+  Future<String> getGraph() async {
     var endpoint = '${url}client/graphviz';
 
     final Response response = await http.get(Uri.parse(endpoint), headers: {
@@ -70,7 +70,7 @@ class ClientService {
       'Charset': 'utf-8'
     });
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return response.body.toString();
     } else {
       throw Exception(response.body);
     }
@@ -86,7 +86,7 @@ class ClientService {
       'address': address
     };
 
-    final Response response = await http.post(Uri.parse(endpoint),
+    final Response response = await http.patch(Uri.parse(endpoint),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

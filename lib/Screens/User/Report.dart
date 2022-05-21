@@ -1,20 +1,18 @@
-import 'dart:convert';
 
-import 'package:enlatadosmgapp/Service/ClientService.dart';
+
+import 'package:enlatadosmgapp/Service/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ClientsReport extends StatefulWidget {
-  const ClientsReport({Key? key}) : super(key: key);
+class UsersReport extends StatefulWidget {
+  const UsersReport({Key? key}) : super(key: key);
 
   @override
-  State<ClientsReport> createState() => _ClientsReportState();
+  State<UsersReport> createState() => _UsersReportState();
 }
 
-class _ClientsReportState extends State<ClientsReport> {
-  final ClientService _clientService = ClientService();
-  String format = "png";
-
+class _UsersReportState extends State<UsersReport> {
+  final _userService = AuthService();
   @override
   Widget build(BuildContext context) {
     String format = "png";
@@ -23,14 +21,14 @@ class _ClientsReportState extends State<ClientsReport> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.red,
-        title: Text("Clientes"),
+        title: Text("Usuarios"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           FutureBuilder<String>(
-            future: _clientService.getGraph(),
+            future: _userService.getGraph(),
             builder: (
               BuildContext context,
               AsyncSnapshot<String> snapshot,
@@ -47,7 +45,7 @@ class _ClientsReportState extends State<ClientsReport> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Reporte de árbol AVL de clientes", style: GoogleFonts.dmSans(fontSize: 25, color: Colors.black)),
+                      Text("Reporte de lista enlazada de usuarios", style: GoogleFonts.dmSans(fontSize: 25, color: Colors.black), textAlign: TextAlign.center),
                       SizedBox(
                         height: 25,
                       ),

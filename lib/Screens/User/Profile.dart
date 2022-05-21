@@ -1,7 +1,9 @@
 import 'package:enlatadosmgapp/Models/User.dart';
+import 'package:enlatadosmgapp/Screens/User/Report.dart';
 import 'package:enlatadosmgapp/Service/AuthService.dart';
 import 'package:enlatadosmgapp/Service/StorageService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,6 +32,14 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           backgroundColor: Colors.black,
           title: Text("Perfil del usuario"),
+          actions: [
+            IconButton(onPressed: (){
+                Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => UsersReport()));
+              }, icon: Icon(FontAwesomeIcons.diagramProject), tooltip: "Generar reporte de lista enlazada")
+          ],
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -90,6 +100,41 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ],
                                 ),
+                              ),
+                              Divider(),
+                              Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Column(
+                                  
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    TextButton.icon(onPressed: (){
+                                      showDialog(context: context, builder: (context){
+                                        return AlertDialog(
+                                          title: Text("¿Realmente deseas cerrar tu sesión?"),
+                                          content: Text("Tendrás que volver a ingresat tus credenciales"),
+                                          actions: [
+                                            TextButton(onPressed: (){
+                                              Navigator.of(context).pop();
+                                            }, child: Text("Cancelar", style: GoogleFonts.dmSans(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue
+                                            ))),
+                                            TextButton(onPressed: () async{
+                                              FlutterSecureStorage storage = FlutterSecureStorage();
+                                              await storage.delete(key: "jwt");
+                                              Navigator.of(context)
+                                              .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+                                            }, child: Text("Si, cerrar", style: GoogleFonts.dmSans(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.red
+                                            )))
+                                          ],
+                                        );
+                                      });
+                                    }, icon: Icon(FontAwesomeIcons.arrowRightToBracket), label: Text("Cerrar sesión"))
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -106,7 +151,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   }
                 }
-                return CircularProgressIndicator();
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                    )
+                  ],
+                );
               }),
         ));
   }

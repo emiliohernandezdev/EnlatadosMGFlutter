@@ -69,7 +69,7 @@ class _ClientsState extends State<Clients> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => ClientsReport()));
-              }, icon: Icon(FontAwesomeIcons.chartSimple), tooltip: "Generar reporte")
+              }, icon: Icon(FontAwesomeIcons.diagramProject), tooltip: "Generar reporte de Árbol AVL")
             ],
           )
         ],

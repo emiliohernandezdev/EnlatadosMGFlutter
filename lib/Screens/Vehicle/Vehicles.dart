@@ -1,5 +1,7 @@
 import 'package:enlatadosmgapp/Models/Vehicle.dart';
 import 'package:enlatadosmgapp/Screens/Vehicle/Create.dart';
+import 'package:enlatadosmgapp/Screens/Vehicle/Report.dart';
+import 'package:enlatadosmgapp/Screens/Vehicle/Update.dart';
 import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,7 +44,17 @@ class _VehiclesState extends State<Vehicles> {
             pinned: true,
             centerTitle: true,
             title: Text("Vehículos"),
-            actions: [],
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => VehiclesReport()));
+                  },
+                  icon: Icon(FontAwesomeIcons.diagramProject),
+                  tooltip: "Generar reporte de cola de vehículos")
+            ],
           )
         ],
         body: FutureBuilder<List<Vehicle>>(
@@ -113,9 +125,9 @@ class _VehiclesState extends State<Vehicles> {
                                             FlatButton(
                                                 onPressed: () {
                                                   vehicleService
-                                                      .deleteVehicle(int.parse(
+                                                      .deleteVehicle(
                                                           data[index]
-                                                              .licensePlate))
+                                                              .licensePlate.toString())
                                                       .then((value) => {
                                                             if (value[
                                                                     "success"] ==
@@ -163,7 +175,20 @@ class _VehiclesState extends State<Vehicles> {
                                           ],
                                         );
                                       });
-                                } else {}
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => UpdateVehicle(
+                                              id: data[index]
+                                                  .licensePlate.toString()))).then((value) => {
+                                        setState(() {
+                                          vehicleService
+                                              .getVehicles(context)
+                                              .then((res) => {data = res});
+                                        })
+                                      });
+                                }
                               },
                               child: Card(
                                   color: Colors.white,

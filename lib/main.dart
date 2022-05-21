@@ -1,5 +1,7 @@
+import 'package:enlatadosmgapp/Screens/Auth/Login.dart';
 import 'package:enlatadosmgapp/Screens/Client/Create.dart';
 import 'package:enlatadosmgapp/Screens/Dealer/Create.dart';
+import 'package:enlatadosmgapp/Screens/Order/Create.dart';
 import 'package:enlatadosmgapp/Screens/User/Profile.dart';
 import 'package:enlatadosmgapp/Screens/Vehicle/Create.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,8 @@ class _MyAppState extends State<MyApp> {
       title: 'Enlatados MG',
       home: WelcomeScreen(),
       routes: {
+        '/login': ((context) => const Login()),
+        '/order/create': ((context) => const CreateOrder()),
         '/user/profile': ((context) => const ProfilePage()),
         '/client/create': (context) => const CreateClient(),
         '/dealer/create': ((context) => const CreateDealer()),

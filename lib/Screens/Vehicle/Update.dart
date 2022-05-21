@@ -1,26 +1,45 @@
 import 'dart:ui';
 
-import 'package:enlatadosmgapp/Service/ClientService.dart';
-import 'package:enlatadosmgapp/Service/DealerService.dart';
-import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../Service/VehicleService.dart';
+import 'Create.dart';
+import 'Vehicles.dart';
 
-class CreateVehicle extends StatefulWidget {
-  const CreateVehicle({Key? key}) : super(key: key);
+class UpdateVehicle extends StatefulWidget {
+  const UpdateVehicle({Key? key, required this.id}) : super(key: key);
+
+  final String id;
+
 
   @override
-  State<CreateVehicle> createState() => _CreateVehicleState();
+  State<UpdateVehicle> createState() => _UpdateVehicleState();
 }
 
-class _CreateVehicleState extends State<CreateVehicle> {
+class _UpdateVehicleState extends State<UpdateVehicle> {
   TextEditingController licensePlateController = TextEditingController();
   TextEditingController brandController = TextEditingController();
   TextEditingController modelController = TextEditingController();
   TextEditingController colorController = TextEditingController();
   TextEditingController yearController = TextEditingController();
   VehicleService vehicleService = VehicleService();
+
+  String lastLicensePlate = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    vehicleService.getVehicle(widget.id).then((value) => {
+        lastLicensePlate = value.licensePlate,
+          licensePlateController.text = value.licensePlate,
+          brandController.text = value.brand,
+          modelController.text = value.model,
+          colorController.text = value.color,
+          yearController.text = value.year.toString()
+        });
+  }
 
   Color selectedColor = Colors.transparent;
 
@@ -69,7 +88,7 @@ class _CreateVehicleState extends State<CreateVehicle> {
         BackgroundImage(image: 'assets/latas.jpg'),
         Scaffold(
           appBar: AppBar(
-            title: Text("Agregar vehículo"),
+            title: Text("Editar vehículo"),
             backgroundColor: Colors.transparent,
           ),
           backgroundColor: Colors.transparent,
@@ -190,12 +209,14 @@ class _CreateVehicleState extends State<CreateVehicle> {
                               modelController.text.isNotEmpty &&
                               yearController.text.isNotEmpty) {
                             vehicleService
-                                .addVehicle(
+                                .updateVehicle(
+                                    lastLicensePlate,
                                     licensePlateController.text,
                                     brandController.text,
-                                    modelController.text,
                                     selectedColor.value.toString(),
-                                    yearController.text)
+                                    yearController.text,
+                                    modelController.text
+                                )
                                 .then((v) => {
                                       if (v["success"] == true)
                                         {
@@ -243,132 +264,6 @@ class _CreateVehicleState extends State<CreateVehicle> {
           ),
         )
       ],
-    );
-  }
-}
-
-Widget makeInput(
-    {label,
-    obscureText = false,
-    keyboardType = TextInputType.name,
-    controller}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      Text(
-        label,
-        style: TextStyle(
-            fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
-      ),
-      SizedBox(
-        height: 5,
-      ),
-      TextField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            border:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black))),
-      ),
-      SizedBox(
-        height: 30,
-      ),
-    ],
-  );
-}
-
-class TextInputField extends StatelessWidget {
-  const TextInputField(
-      {Key? key,
-      required this.icon,
-      required this.hint,
-      this.inputType,
-      this.inputAction,
-      this.controller,
-      this.minLines})
-      : super(key: key);
-
-  final IconData icon;
-  final String hint;
-  final TextInputType? inputType;
-  final TextInputAction? inputAction;
-  final TextEditingController? controller;
-  final int? minLines;
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        height: size.height * 0.08,
-        width: size.width * 0.8,
-        decoration: BoxDecoration(
-          color: Colors.grey[500]!.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: TextField(
-            minLines: minLines,
-            maxLines: 10,
-            controller: controller,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Icon(
-                  icon,
-                  size: 28,
-                  color: Colors.white,
-                ),
-              ),
-              hintText: hint,
-              hintStyle:
-                  TextStyle(fontSize: 22, color: Colors.white, height: 1.5),
-            ),
-            style: TextStyle(fontSize: 22, color: Colors.white, height: 1.5),
-            keyboardType: inputType,
-            textInputAction: inputAction,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RoundedButton extends StatelessWidget {
-  const RoundedButton({
-    Key? key,
-    required this.buttonName,
-  }) : super(key: key);
-
-  final String buttonName;
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height * 0.08,
-      width: size.width * 0.8,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.blue,
-      ),
-      child: TextButton(
-        onPressed: () {},
-        child: Text(
-          buttonName,
-          style: TextStyle(fontSize: 22, color: Colors.white, height: 1.5)
-              .copyWith(fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }

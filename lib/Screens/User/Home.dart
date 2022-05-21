@@ -97,7 +97,7 @@ class _UserHomeState extends State<UserHome> {
             BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.box), label: "Órdenes"),
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.user), label: "Perfil")
+                icon: Icon(FontAwesomeIcons.userGroup), label: "Perfil")
           ],
         ));
   }
