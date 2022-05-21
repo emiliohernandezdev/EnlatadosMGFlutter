@@ -218,7 +218,12 @@ class _CreateVehicleState extends State<CreateVehicle> {
                                               content: Text(err.toString())))
                                     });
                             print(selectedColor.value);
-                          } else {}
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content:
+                                                      Text("Completa todos los campos")));
+                          }
                         },
                         child: Text(
                           "Guardar",

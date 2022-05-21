@@ -39,7 +39,7 @@ class VehicleService {
 
   Future addVehicle(String licensePlate, String brand, String model,
       String color, String year) async {
-    var uri = url + "vehicle/add";
+    var uri = '${url}vehicle/add';
     Map body = {
       'licensePlate': licensePlate,
       'brand': brand,
@@ -60,6 +60,7 @@ class VehicleService {
       throw Exception("Error bro");
     }
   }
+
 
   Future deleteVehicle(String plate) async {
     var endpoint = '${url}vehicle/delete/${plate}';

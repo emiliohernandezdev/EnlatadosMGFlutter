@@ -4,12 +4,14 @@ import 'package:date_time_picker/date_time_picker.dart';
 import 'package:enlatadosmgapp/Models/Client.dart';
 import 'package:enlatadosmgapp/Service/ClientService.dart';
 import 'package:enlatadosmgapp/Service/DealerService.dart';
+import 'package:enlatadosmgapp/Service/OrderService.dart';
 import 'package:enlatadosmgapp/Service/VehicleService.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:select_form_field/select_form_field.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class CreateOrder extends StatefulWidget {
   const CreateOrder({Key? key}) : super(key: key);
 
@@ -20,47 +22,52 @@ class CreateOrder extends StatefulWidget {
 class _CreateOrderState extends State<CreateOrder> {
   TextEditingController originDepartController = TextEditingController();
   TextEditingController destDepartController = TextEditingController();
-  TextEditingController startDateTimeController = TextEditingController(text: DateTime.now().toString());
+  TextEditingController startDateTimeController =
+      TextEditingController(text: DateTime.now().toString());
+  TextEditingController boxesController = TextEditingController();
   TextEditingController clientController = TextEditingController();
   TextEditingController vehicleController = TextEditingController();
+  TextEditingController dealerController = TextEditingController();
   DealerService dealerService = DealerService();
   ClientService clientService = ClientService();
   VehicleService vehicleService = VehicleService();
+  OrderService orderService = OrderService();
   List<Map<String, dynamic>> clients = [];
   List<Map<String, dynamic>> dealers = [];
   List<Map<String, dynamic>> vehicles = [];
 
   @override
   void initState() {
-    clientService.getClients(context, "inOrder")
-    .then((value) => {
-      value.forEach((element) { 
-        clients.add({
-          'value': element.cui,
-          'label': element.name + " " + element.surname
+    clientService.getClients(context, "inOrder").then((value) => {
+          value.forEach((element) {
+            clients.add({
+              'value': element.cui,
+              'label': element.name + " " + element.surname
+            });
+          })
         });
-      })
-    });
 
-    dealerService.getDealers(context)
-    .then((value) => {
-      value.forEach((element) { 
-        dealers.add({
-          'value': element.cui,
-          'label': element.name + " " + element.surname
+    dealerService.getDealers(context).then((value) => {
+          value.forEach((element) {
+            dealers.add({
+              'value': element.cui,
+              'label': element.name + " " + element.surname
+            });
+          })
         });
-      })
-    });
 
-    vehicleService.getVehicles(context)
-    .then((value) => {
-      value.forEach((element) { 
-        vehicles.add({
-          'value': element.licensePlate,
-          'label': element.brand + " " + element.model + " " + element.year.toString()
+    vehicleService.getVehicles(context).then((value) => {
+          value.forEach((element) {
+            vehicles.add({
+              'value': element.licensePlate,
+              'label': element.brand +
+                  " " +
+                  element.model +
+                  " " +
+                  element.year.toString()
+            });
+          })
         });
-      })
-    });
     super.initState();
   }
 
@@ -129,7 +136,7 @@ class _CreateOrderState extends State<CreateOrder> {
                     TextInputField(
                       icon: FontAwesomeIcons.buildingCircleArrowRight,
                       hint: 'Depart. de origen',
-                      inputType: TextInputType.number,
+                      inputType: TextInputType.text,
                       inputAction: TextInputAction.next,
                       controller: originDepartController,
                     ),
@@ -140,6 +147,12 @@ class _CreateOrderState extends State<CreateOrder> {
                       inputAction: TextInputAction.next,
                       controller: destDepartController,
                     ),
+                    TextInputField(
+                        icon: FontAwesomeIcons.boxesStacked,
+                        hint: '# de cajas',
+                        inputType: TextInputType.number,
+                        controller: boxesController,
+                        inputAction: TextInputAction.next),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: Container(
@@ -152,11 +165,12 @@ class _CreateOrderState extends State<CreateOrder> {
                         child: Center(
                           child: DateTimePicker(
                             type: DateTimePickerType.dateTime,
-                            dateMask: 'd MMM, yyyy hh:mm',
+                            use24HourFormat: true,
+                            dateMask: 'd MMM yyyy',
                             firstDate: DateTime(2000),
                             lastDate: DateTime(2100),
                             icon: Icon(Icons.event),
-                            calendarTitle: "Seleccionar fecha", 
+                            calendarTitle: "Seleccionar fecha",
                             cancelText: "Cancelar",
                             confirmText: "Aceptar",
                             controller: startDateTimeController,
@@ -164,31 +178,30 @@ class _CreateOrderState extends State<CreateOrder> {
                             dateLabelText: 'Fecha y hora de inicio',
                             timeLabelText: "Hora",
                             decoration: InputDecoration(
-                                    hintStyle: GoogleFonts.dmSans(
-                                      color: Colors.white,
-                                      decorationColor: Colors.white
-                                    ),
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20.0),
-                                      child: Icon(
-                                        FontAwesomeIcons.calendar,
-                                        size: 28,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.white, width: 5.0),
-                                    )),
+                                hintStyle: GoogleFonts.dmSans(
+                                    color: Colors.white,
+                                    decorationColor: Colors.white),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0),
+                                  child: Icon(
+                                    FontAwesomeIcons.calendar,
+                                    size: 28,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white, width: 5.0),
+                                )),
                             onChanged: (val) => {
-                              setState((){
-                                  startDateTimeController.text = val;
+                              setState(() {
+                                startDateTimeController.text = DateTime.parse(val).toIso8601String();
                               })
                             },
                             onSaved: (val) => {
-                              setState((){
-                                  startDateTimeController.text = val ?? '';
+                              setState(() {
+                                startDateTimeController.text = DateTime.parse(val?? '').toIso8601String() ;
                               })
                             },
                           ),
@@ -312,11 +325,9 @@ class _CreateOrderState extends State<CreateOrder> {
                                     .dropdown, // or can be dialog
                                 labelText: 'Seleccionar repartidor',
                                 items: dealers,
-                                controller: vehicleController)),
+                                controller: dealerController)),
                       ),
                     ),
-                    
-
                     SizedBox(
                       height: 25,
                     ),
@@ -328,7 +339,48 @@ class _CreateOrderState extends State<CreateOrder> {
                         color: Colors.red,
                       ),
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (originDepartController.text.isNotEmpty &&
+                              destDepartController.text.isNotEmpty &&
+                              boxesController.text.isNotEmpty &&
+                              startDateTimeController.text.isNotEmpty &&
+                              clientController.text.isNotEmpty &&
+                              vehicleController.text.isNotEmpty &&
+                              dealerController.text.isNotEmpty) {
+                                DateTime dtx = DateTime.parse(startDateTimeController.text);
+
+                            orderService
+                                .addOrder(
+                                    originDepartController.text,
+                                    destDepartController.text,
+                                    dtx.toIso8601String(),
+                                    vehicleController.text,
+                                    clientController.text,
+                                    dealerController.text,
+                                    boxesController.text)
+                                .then((value) => {
+                                      if (value["success"] == true)
+                                        {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                            content: Text(value["message"]),
+                                          )),
+                                          Navigator.of(context).pop(),
+                                        }
+                                      else
+                                        {
+                                          print("error: " + value["success"]),
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(value["message"])))
+                                        }
+                                    });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    "Completa todos los campos de la orden")));
+                          }
+                        },
                         child: Text(
                           "Guardar",
                           style: TextStyle(

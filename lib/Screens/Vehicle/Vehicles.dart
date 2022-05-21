@@ -255,7 +255,9 @@ class _VehiclesState extends State<Vehicles> {
                                                                 ),
                                                                 subtitle: Wrap(
                                                                   children: [
-                                                                    Text(
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
                                                                         "Marca: ",
                                                                         style: TextStyle(
                                                                             fontWeight:
@@ -266,7 +268,9 @@ class _VehiclesState extends State<Vehicles> {
                                                                             .brand,
                                                                         style: TextStyle(
                                                                             fontSize:
-                                                                                19.0)),
+                                                                                19.0))
+                                                                      ],
+                                                                    ),
                                                                     Text(
                                                                         "Modelo: ",
                                                                         style: TextStyle(

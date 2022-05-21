@@ -20,6 +20,11 @@ class _DealersState extends State<Dealers> {
   List<Dealer> dealers = <Dealer>[];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
   }
@@ -353,7 +358,23 @@ class _DealersState extends State<Dealers> {
                             ),
                           );
                         }),
-                    onRefresh: () async {},
+                    onRefresh: () async {
+                      const snackBar = SnackBar(
+                        content: Text('Registros actualizados'),
+                      );
+
+                      _dealerService
+                          .getDealers(context)
+                          .then((value) => setState(() {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                                data = value;
+                              }))
+                          .catchError((err) => {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(content: Text(err))),
+                              });
+                    },
                   );
                 } else {
                   return Column(
